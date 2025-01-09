@@ -20,6 +20,10 @@ defmodule InfinitFoundationFrontendWeb.Router do
     get "/", PageController, :home
     get "/sign-in", AuthController, :sign_in
     get "/sign-up", AuthController, :sign_up
+
+    live "/students", StudentLive.Index, :index
+    live "/how-it-works", HowItWorksLive, :index
+    live "/mission", MissionLive, :index
   end
 
   # Other scopes may use custom stacks.
