@@ -5,7 +5,7 @@ defmodule InfinitFoundationFrontendWeb.ImpactLive do
   def mount(_params, _session, socket) do
     metrics = [
       %{
-        number: "15,000+",
+        number: "250+",
         label: "Daily Meals Served",
         description: "Nutritious meals provided to children every school day"
       },
@@ -50,10 +50,11 @@ defmodule InfinitFoundationFrontendWeb.ImpactLive do
     ]
 
     annual_growth = [
-      %{year: 2021, students: 500, schools: 3},
-      %{year: 2022, students: 2000, schools: 8},
-      %{year: 2023, students: 5000, schools: 15},
-      %{year: 2024, students: 8000, schools: 25}
+      %{year: 2021, students: 20, schools: 1},
+      %{year: 2022, students: 25, schools: 1},
+      %{year: 2023, students: 30, schools: 1},
+      %{year: 2024, students: 50, schools: 2},
+      %{year: 2025, students: 250, schools: 2}
     ]
 
     {:ok, assign(socket,
