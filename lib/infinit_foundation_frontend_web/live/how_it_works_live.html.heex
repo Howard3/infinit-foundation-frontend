@@ -1,46 +1,45 @@
 <div class="bg-white">
-  <div class="relative isolate overflow-hidden">
-    <div class="mx-auto max-w-7xl px-6 py-24 sm:py-32 lg:px-8">
+  <div class="relative isolate overflow-hidden bg-gray-900 py-24 sm:py-32">
+    <img
+      src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?ixlib=rb-4.0.3&auto=format&fit=crop&w=2340&q=80"
+      alt="Students having lunch at school"
+      class="absolute inset-0 -z-10 h-full w-full object-cover object-center brightness-50"
+    />
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-2xl lg:mx-0">
-        <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-6xl">
-          How Sponsorship Works
-        </h1>
-        <p class="mt-6 text-lg leading-8 text-gray-600">
-          Make a lasting impact on a child's life through our transparent and direct sponsorship program.
+        <h1 class="text-4xl font-bold tracking-tight text-white sm:text-6xl">How It Works</h1>
+        <p class="mt-6 text-lg leading-8 text-gray-300">
+          Our program is designed to be simple, transparent, and effective. See how your sponsorship directly impacts a child's life through our technology-enabled feeding program.
         </p>
       </div>
     </div>
   </div>
 
-  <div class="mx-auto max-w-7xl px-6 lg:px-8 pb-24">
-    <div class="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
-      <div>
-        <h2 class="text-base font-semibold leading-7 text-red-600">Simple Process</h2>
-        <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          Four steps to change a life
-        </p>
-        <p class="mt-6 text-base leading-7 text-gray-600">
-          Our sponsorship program is designed to be simple, transparent, and impactful. Here's how it works:
-        </p>
-      </div>
+  <div class="mx-auto max-w-7xl px-6 lg:px-8 py-24 sm:py-32">
+    <div class="mx-auto max-w-2xl lg:text-center">
+      <h2 class="text-base font-semibold leading-7 text-red-600">Simple Process</h2>
+      <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+        Four steps to change a life
+      </p>
+      <p class="mt-6 text-lg leading-8 text-gray-600">
+        Our sponsorship program connects you directly with a child in need, ensuring your support makes a real difference.
+      </p>
     </div>
 
     <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
       <dl class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-4">
         <%= for {step, i} <- Enum.with_index(@steps) do %>
-          <div class="flex flex-col">
+          <div class="relative pl-16">
             <dt class="text-base font-semibold leading-7 text-gray-900">
-              <div class="mb-6 flex h-10 w-10 items-center justify-center rounded-lg bg-red-600">
+              <div class="absolute left-0 top-0 flex h-12 w-12 items-center justify-center rounded-lg bg-red-600 shadow-md">
                 <.icon name={step.icon} class="h-6 w-6 text-white" />
               </div>
               <div class="flex items-center gap-x-3">
-                <span class="text-sm leading-6 text-red-600">Step {i + 1}</span>
-                <span>{step.title}</span>
+                <span class="text-sm leading-6 text-red-600 font-semibold">Step {i + 1}</span>
+                <span class="text-lg">{step.title}</span>
               </div>
             </dt>
-            <dd class="mt-4 flex flex-auto flex-col text-base leading-7 text-gray-600">
-              <p class="flex-auto">{step.description}</p>
-            </dd>
+            <dd class="mt-4 text-base leading-7 text-gray-600">{step.description}</dd>
           </div>
         <% end %>
       </dl>
@@ -62,9 +61,11 @@
       <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
         <dl class="grid max-w-xl grid-cols-1 gap-x-12 gap-y-16 lg:max-w-none lg:grid-cols-2">
           <%= for commitment <- @commitments do %>
-            <div class="bg-white rounded-xl p-10 shadow-sm hover:shadow-md transition-shadow duration-200">
+            <div class="bg-white rounded-xl p-10 shadow-lg hover:shadow-xl transition-shadow duration-200 relative overflow-hidden">
+              <div class="absolute top-0 right-0 w-32 h-32 -mr-8 -mt-8 bg-red-600/5 rounded-full">
+              </div>
               <dt class="flex items-center gap-x-4">
-                <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-red-600/10">
+                <div class="flex h-14 w-14 items-center justify-center rounded-lg bg-red-600/10 ring-1 ring-red-600/30">
                   <.icon name={commitment.icon} class="h-7 w-7 text-red-600" />
                 </div>
                 <span class="text-xl font-semibold leading-7 text-gray-900">
@@ -94,7 +95,7 @@
         </div>
         <dl class="mt-16 grid grid-cols-1 gap-0.5 overflow-hidden rounded-2xl text-center sm:grid-cols-3">
           <%= for stat <- @impact_stats do %>
-            <div class="flex flex-col bg-white/5 p-8">
+            <div class="flex flex-col bg-white/5 p-8 backdrop-blur-sm hover:bg-white/10 transition-colors duration-200">
               <dt class="text-sm font-semibold leading-6 text-gray-300">
                 {stat.description}
               </dt>
@@ -108,7 +109,7 @@
     </div>
   </div>
 
-  <div class="bg-white">
+  <div class="relative isolate overflow-hidden">
     <div class="px-6 py-24 sm:px-6 sm:py-32 lg:px-8">
       <div class="mx-auto max-w-2xl text-center">
         <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">

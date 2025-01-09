@@ -24,6 +24,7 @@ defmodule InfinitFoundationFrontendWeb.Router do
     live "/students", StudentLive.Index, :index
     live "/how-it-works", HowItWorksLive, :index
     live "/mission", MissionLive, :index
+    live "/impact", ImpactLive, :index
   end
 
   # Other scopes may use custom stacks.
