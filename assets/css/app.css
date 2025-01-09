@@ -1,0 +1,14 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* This file is for your main application CSS */
+
+/* Counter animations */
+[data-counter] {
+  transition: color 0.3s ease;
+}
+
+[data-counter].counting {
+  color: theme('colors.red.600');
+}
