@@ -18,6 +18,8 @@ defmodule InfinitFoundationFrontendWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/sign-in", AuthController, :sign_in
+    get "/sign-up", AuthController, :sign_up
   end
 
   # Other scopes may use custom stacks.

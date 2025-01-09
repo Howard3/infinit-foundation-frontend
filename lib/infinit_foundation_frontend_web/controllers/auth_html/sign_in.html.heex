@@ -1,0 +1,46 @@
+<div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
+  <div class="sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="text-center">
+      <a href="/" class="text-2xl font-semibold text-gray-900">
+        Infinit Foundation
+      </a>
+    </div>
+    <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
+      Sign in to your account
+    </h2>
+    <p class="mt-2 text-center text-sm text-gray-600">
+      Or
+      <a href="/sign-up" class="font-medium text-red-600 hover:text-red-500">
+        create a new account
+      </a>
+    </p>
+  </div>
+
+  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+    <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
+      <div id="sign-in"></div>
+      <script>
+        window.addEventListener('load', async function() {
+          const clerk = window.Clerk;
+          
+          // Mount the sign-in component
+          const signIn = document.getElementById('sign-in');
+          await clerk.mountSignIn(signIn, {
+            routing: 'path',
+            path: '/sign-in',
+            signUpUrl: '/sign-up',
+            afterSignInUrl: '/',
+            appearance: {
+              elements: {
+                formButtonPrimary: 
+                  'bg-red-600 hover:bg-red-500 text-white',
+                footerActionLink: 
+                  'text-red-600 hover:text-red-500'
+              }
+            }
+          });
+        });
+      </script>
+    </div>
+  </div>
+</div>
