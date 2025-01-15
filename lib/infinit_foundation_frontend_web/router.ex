@@ -25,6 +25,7 @@ defmodule InfinitFoundationFrontendWeb.Router do
     live "/how-it-works", HowItWorksLive, :index
     live "/mission", MissionLive, :index
     live "/impact", ImpactLive, :index
+    get "/sign-in-callback", AuthController, :sign_in_callback
   end
 
   # Other scopes may use custom stacks.

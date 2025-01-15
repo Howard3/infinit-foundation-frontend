@@ -8,4 +8,9 @@ defmodule InfinitFoundationFrontendWeb.AuthController do
   def sign_up(conn, _params) do
     render(conn, :sign_up)
   end
+
+  def sign_in_callback(conn, _params) do
+    conn
+    |> redirect(to: "/")
+  end
 end
