@@ -13,7 +13,13 @@
       <%= for student <- @students do %>
         <div class="bg-white overflow-hidden rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200">
           <div class="relative h-48">
-            <img src={student.image_url} alt={student.name} class="w-full h-full object-cover" />
+            <%= if student.image_url do %>
+              <img src={student.image_url} alt={student.name} class="w-full h-full object-cover" />
+            <% else %>
+              <div class="w-full h-full bg-gray-100 flex items-center justify-center">
+                <span class="text-gray-400 text-sm">No image available</span>
+              </div>
+            <% end %>
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
             <div class="absolute bottom-4 left-4 right-4">
               <h3 class="text-xl font-semibold text-white">

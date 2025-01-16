@@ -1,37 +1,31 @@
 defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   use InfinitFoundationFrontendWeb, :live_view
+  alias InfinitFoundationFrontend.ApiClient
 
   @sponsorship_amount 250 # USD
 
   @impl true
   def mount(_params, _session, socket) do
-    # This would eventually come from your database
-    students = [
+    # Fetch students from the API
+    %{"students" => students, "total" => total} = ApiClient.list_students(%{page: 1, limit: 10})
+
+    # Transform the API response to match our expected format
+    students = Enum.map(students, fn student ->
       %{
-        id: 1,
-        name: "Maria Santos",
+        id: student["id"],
+        name: "#{student["firstName"]} #{student["lastName"]}",
+        # You might want to fetch these additional fields from the API
         age: 8,
         grade: "Grade 2",
-        school: "San Pedro Elementary School",
+        school: "School #{student["schoolId"]}",
         location: "Manila",
-        story: "Maria loves mathematics and dreams of becoming a teacher. She walks 2km to school every day and helps her mother sell vegetables on weekends.",
+        story: "Student story...",
         sponsored: false,
-        image_url: "https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300"
-      },
-      %{
-        id: 2,
-        name: "Juan Cruz",
-        age: 10,
-        grade: "Grade 4",
-        school: "Makati Elementary School",
-        location: "Makati",
-        story: "Juan excels in science and wants to be a doctor to help his community. He currently ranks first in his class despite often missing meals.",
-        sponsored: true,
-        image_url: "https://images.unsplash.com/photo-1545558014-8692077e9b5c?ixlib=rb-4.0.3&auto=format&fit=crop&w=300&h=300"
+        image_url: student["profilePhotoUrl"] && ApiClient.photo_url(student["profilePhotoUrl"])
       }
-    ]
+    end)
 
-    {:ok, assign(socket, students: students, sponsorship_amount: @sponsorship_amount)}
+    {:ok, assign(socket, students: students, total: total, sponsorship_amount: @sponsorship_amount)}
   end
 
   @impl true

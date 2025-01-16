@@ -35,3 +35,4 @@ infinit_foundation_frontend-*.tar
 npm-debug.log
 /assets/node_modules/
 
+.envrc

@@ -7,27 +7,39 @@
     </div>
     <div class="flex items-center gap-6 font-semibold leading-6">
       <nav class="flex items-center gap-4">
-        <a href="/mission" class="text-sm text-zinc-900 hover:text-zinc-700">Our Mission</a>
-        <a href="/impact" class="text-sm text-zinc-900 hover:text-zinc-700">Impact</a>
-        <a href="/how-it-works" class="text-sm text-zinc-900 hover:text-zinc-700">How It Works</a>
-        <a href="/students" class="text-sm text-zinc-900 hover:text-zinc-700">Sponsor</a>
+        {live_patch("Our Mission",
+          to: ~p"/mission",
+          class: "text-sm text-zinc-900 hover:text-zinc-700"
+        )}
+        {live_patch("Impact", to: ~p"/impact", class: "text-sm text-zinc-900 hover:text-zinc-700")}
+        {live_patch("How It Works",
+          to: ~p"/how-it-works",
+          class: "text-sm text-zinc-900 hover:text-zinc-700"
+        )}
+        {live_patch("Sponsor",
+          to: ~p"/students",
+          class: "text-sm text-zinc-900 hover:text-zinc-700"
+        )}
       </nav>
       <div class="flex items-center gap-4">
         <div id="user-control" phx-update="ignore" class="hidden">
-          <a
-            href="/sign-in"
-            class="text-sm text-zinc-900 hover:text-zinc-700 border border-zinc-200 rounded-lg px-4 py-2 hover:bg-zinc-50"
-          >
-            Sign in
-          </a>
+          <div id="user-control-content">
+            <a
+              href="/sign-in"
+              class="text-sm text-zinc-900 hover:text-zinc-700 border border-zinc-200 rounded-lg px-4 py-2 hover:bg-zinc-50"
+            >
+              Sign in
+            </a>
+          </div>
         </div>
         <script>
           window.addEventListener('load', async function() {
             await Clerk.load();
             const userControl = document.getElementById('user-control');
+            const userControlContent = document.getElementById('user-control-content');
             if (Clerk.user) {
-              userControl.innerHTML = '';
-              await Clerk.mountUserButton(userControl);
+              userControlContent.innerHTML = '';
+              await Clerk.mountUserButton(userControlContent);
             }
 
             userControl.classList.remove('hidden');

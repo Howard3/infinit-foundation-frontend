@@ -26,6 +26,9 @@ defmodule InfinitFoundationFrontendWeb.Router do
     live "/mission", MissionLive, :index
     live "/impact", ImpactLive, :index
     get "/sign-in-callback", AuthController, :sign_in_callback
+
+    # Add this new route to handle image proxying
+    get "/student/profile/photo/*path", ImageController, :proxy_photo
   end
 
   # Other scopes may use custom stacks.
