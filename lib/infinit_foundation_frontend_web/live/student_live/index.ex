@@ -1,31 +1,66 @@
 defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   use InfinitFoundationFrontendWeb, :live_view
   alias InfinitFoundationFrontend.ApiClient
+  alias InfinitFoundationFrontend.Schemas.{Location, Student}
 
   @sponsorship_amount 250 # USD
 
   @impl true
   def mount(_params, _session, socket) do
-    # Fetch students from the API
-    %{"students" => students, "total" => total} = ApiClient.list_students(%{page: 1, limit: 10})
+    locations = ApiClient.list_locations()
+
+    # Create combined location options for the dropdown
+    location_options =
+      locations
+      |> Enum.flat_map(fn %Location{country: country, cities: cities} ->
+        Enum.map(cities, fn city -> "#{country} - #{city}" end)
+      end)
+      |> Enum.sort()
+
+    students_response = ApiClient.list_students(%{page: 1, limit: 10})
 
     # Transform the API response to match our expected format
-    students = Enum.map(students, fn student ->
+    students = Enum.map(students_response.students, fn student ->
       %{
-        id: student["id"],
-        name: "#{student["firstName"]} #{student["lastName"]}",
-        # You might want to fetch these additional fields from the API
-        age: 8,
+        id: student.id,
+        name: "#{student.first_name} #{student.last_name}",
+        age: 8, # You might want to fetch these from the API
         grade: "Grade 2",
-        school: "School #{student["schoolId"]}",
+        school: "School #{student.school_id}",
         location: "Manila",
         story: "Student story...",
         sponsored: false,
-        image_url: student["profilePhotoUrl"] && ApiClient.photo_url(student["profilePhotoUrl"])
+        image_url: student.profile_photo_url && ApiClient.photo_url(student.profile_photo_url)
       }
     end)
 
-    {:ok, assign(socket, students: students, total: total, sponsorship_amount: @sponsorship_amount)}
+    {:ok,
+     assign(socket,
+       students: students,
+       total: students_response.total,
+       sponsorship_amount: @sponsorship_amount,
+       location_options: location_options,
+       selected_location: nil
+     )}
+  end
+
+  @impl true
+  def handle_event("filter_location", %{"location" => ""}, socket) do
+    # Reset filter
+    students_response = ApiClient.list_students(%{page: 1, limit: 10})
+    {:noreply, assign(socket, :students, transform_students(students_response.students))}
+  end
+
+  def handle_event("filter_location", %{"location" => location}, socket) do
+    [country, city] = String.split(location, " - ")
+    students_response = ApiClient.list_students(%{
+      page: 1,
+      limit: 10,
+      country: country,
+      city: city
+    })
+
+    {:noreply, assign(socket, :students, transform_students(students_response.students))}
   end
 
   @impl true
@@ -42,5 +77,21 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
     end)
 
     {:noreply, assign(socket, :students, students)}
+  end
+
+  defp transform_students(students) do
+    Enum.map(students, fn student ->
+      %{
+        id: student.id,
+        name: "#{student.first_name} #{student.last_name}",
+        age: 8,
+        grade: "Grade 2",
+        school: "School #{student.school_id}",
+        location: "Manila",
+        story: "Student story...",
+        sponsored: false,
+        image_url: student.profile_photo_url && ApiClient.photo_url(student.profile_photo_url)
+      }
+    end)
   end
 end

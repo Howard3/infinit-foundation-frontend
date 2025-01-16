@@ -1,16 +1,32 @@
 defmodule InfinitFoundationFrontend.ApiClient do
+  alias InfinitFoundationFrontend.Schemas.{Location, Student, PaginatedStudents}
+
   @base_url Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :base_url])
   @api_key Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :api_key])
 
+  @spec list_locations() :: [Location.t()]
   def list_locations do
     Req.get!(url("/locations"), headers: default_headers())
     |> Map.get(:body)
+    |> Map.get("locations")
+    |> Enum.map(fn location ->
+      %Location{
+        country: location["country"],
+        cities: location["cities"]
+      }
+    end)
+    |> dbg
   end
 
-  @spec list_students(any()) :: any()
+  @spec list_students(map()) :: PaginatedStudents.t()
   def list_students(params \\ %{}) do
-    Req.get!(url("/students"), headers: default_headers(), params: params)
-    |> Map.get(:body)
+    response = Req.get!(url("/students"), headers: default_headers(), params: params)
+    body = response.body
+
+    %PaginatedStudents{
+      students: Enum.map(body["students"], &to_student/1),
+      total: body["total"]
+    }
   end
 
   def list_students_by_location(params \\ %{}) do
@@ -34,5 +50,15 @@ defmodule InfinitFoundationFrontend.ApiClient do
       {"accept", "application/json"},
       {"X-API-Key", @api_key}
     ]
+  end
+
+  defp to_student(data) do
+    %Student{
+      id: data["id"],
+      first_name: data["firstName"],
+      last_name: data["lastName"],
+      profile_photo_url: data["profilePhotoUrl"],
+      school_id: data["schoolId"]
+    }
   end
 end
