@@ -20,7 +20,12 @@ defmodule InfinitFoundationFrontend.ApiClient do
 
   @spec list_students(map()) :: PaginatedStudents.t()
   def list_students(params \\ %{}) do
-    response = Req.get!(url("/students"), headers: default_headers(), params: params)
+    params_with_defaults = Map.merge(
+      %{active: true, eligible_for_sponsorship: true},
+      params
+    )
+
+    response = Req.get!(url("/students"), headers: default_headers(), params: params_with_defaults)
     body = response.body
 
     %PaginatedStudents{
@@ -30,7 +35,12 @@ defmodule InfinitFoundationFrontend.ApiClient do
   end
 
   def list_students_by_location(params \\ %{}) do
-    Req.get!(url("/students/by-location"), headers: default_headers(), params: params)
+    params_with_defaults = Map.merge(
+      %{active: true, eligible_for_sponsorship: true},
+      params
+    )
+
+    Req.get!(url("/students/by-location"), headers: default_headers(), params: params_with_defaults)
     |> Map.get(:body)
   end
 
