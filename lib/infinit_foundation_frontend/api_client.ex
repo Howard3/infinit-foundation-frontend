@@ -68,7 +68,9 @@ defmodule InfinitFoundationFrontend.ApiClient do
       first_name: data["firstName"],
       last_name: data["lastName"],
       profile_photo_url: data["profilePhotoUrl"],
-      school_id: data["schoolId"]
+      school_id: data["schoolId"],
+      date_of_birth: data["dateOfBirth"],
+      grade: data["grade"]
     }
   end
 end

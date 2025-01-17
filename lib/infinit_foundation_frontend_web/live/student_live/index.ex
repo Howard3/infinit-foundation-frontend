@@ -24,8 +24,8 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
       %{
         id: student.id,
         name: "#{student.first_name} #{student.last_name}",
-        age: 8, # You might want to fetch these from the API
-        grade: "Grade 2",
+        age: calculate_age(student.date_of_birth),
+        grade: student.grade,
         school: "School #{student.school_id}",
         location: "Manila",
         story: "Student story...",
@@ -93,5 +93,21 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
         image_url: student.profile_photo_url && ApiClient.photo_url(student.profile_photo_url)
       }
     end)
+  end
+
+  defp calculate_age(date_of_birth) do
+    case date_of_birth do
+      nil -> nil
+      dob when is_binary(dob) ->
+        case Regex.match?(~r/^\d{4}-\d{2}-\d{2}$/, dob) do
+          true ->
+            today = Date.utc_today()
+            {:ok, birth_date} = Date.from_iso8601(dob)
+            age = today.year - birth_date.year - if today.month > birth_date.month or (today.month == birth_date.month and today.day >= birth_date.day), do: 0, else: 1
+            age
+          false -> nil
+        end
+      _ -> nil
+    end
   end
 end

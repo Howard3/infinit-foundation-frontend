@@ -14,9 +14,10 @@ defmodule InfinitFoundationFrontend.Schemas do
       last_name: String.t(),
       profile_photo_url: String.t() | nil,
       school_id: integer(),
-      # Add other fields as needed
+      date_of_birth: String.t() | nil,
+      grade: String.t() | nil
     }
-    defstruct [:id, :first_name, :last_name, :profile_photo_url, :school_id]
+    defstruct [:id, :first_name, :last_name, :profile_photo_url, :school_id, :date_of_birth, :grade]
   end
 
   defmodule PaginatedStudents do
