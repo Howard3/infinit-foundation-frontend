@@ -5,7 +5,51 @@
         <span class="text-lg font-semibold text-zinc-900">Infinit Foundation</span>
       </a>
     </div>
-    <div class="flex items-center gap-6 font-semibold leading-6">
+    
+<!-- Mobile controls -->
+    <div class="flex items-center gap-4 lg:hidden">
+      <div id="mobile-top-user-control" phx-update="ignore" class="hidden">
+        <div id="mobile-top-user-control-content">
+          <a
+            href="/sign-in"
+            class="text-sm text-zinc-900 hover:text-zinc-700 border border-zinc-200 rounded-lg px-4 py-2 hover:bg-zinc-50"
+          >
+            Sign in
+          </a>
+        </div>
+      </div>
+      <script>
+        window.addEventListener('load', async function() {
+          await Clerk.load();
+          const mobileTopUserControl = document.getElementById('mobile-top-user-control');
+          const mobileTopUserControlContent = document.getElementById('mobile-top-user-control-content');
+          if (Clerk.user) {
+            mobileTopUserControlContent.innerHTML = '';
+            await Clerk.mountUserButton(mobileTopUserControlContent);
+          }
+          mobileTopUserControl.classList.remove('hidden');
+        });
+      </script>
+      <button
+        type="button"
+        class="inline-flex items-center justify-center p-2 rounded-md text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100"
+        phx-click={JS.toggle(to: "#mobile-menu")}
+        aria-expanded="false"
+      >
+        <span class="sr-only">Open main menu</span>
+        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          />
+        </svg>
+      </button>
+    </div>
+    
+<!-- Desktop menu -->
+    <div class="hidden lg:flex items-center gap-6 font-semibold leading-6">
       <nav class="flex items-center gap-4">
         {live_patch("Our Mission",
           to: ~p"/mission",
@@ -44,6 +88,32 @@
         <a
           href="/students"
           class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500"
+        >
+          Donate Now
+        </a>
+      </div>
+    </div>
+  </div>
+  
+<!-- Mobile menu -->
+  <div id="mobile-menu" class="hidden lg:hidden">
+    <div class="px-2 pt-2 pb-3 space-y-1">
+      {live_patch("Our Mission",
+        to: ~p"/mission",
+        class: "block px-3 py-2 text-base font-medium text-zinc-900 hover:bg-zinc-100 rounded-md"
+      )}
+      {live_patch("Impact",
+        to: ~p"/impact",
+        class: "block px-3 py-2 text-base font-medium text-zinc-900 hover:bg-zinc-100 rounded-md"
+      )}
+      {live_patch("How It Works",
+        to: ~p"/how-it-works",
+        class: "block px-3 py-2 text-base font-medium text-zinc-900 hover:bg-zinc-100 rounded-md"
+      )}
+      <div class="px-3 py-2">
+        <a
+          href="/students"
+          class="block w-full text-center mt-2 rounded-lg bg-red-600 px-4 py-2 text-base font-medium text-white hover:bg-red-500"
         >
           Donate Now
         </a>
