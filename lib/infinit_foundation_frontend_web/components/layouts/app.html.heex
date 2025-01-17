@@ -1,8 +1,8 @@
-<header class="px-4 sm:px-6 lg:px-8 sticky top-0 bg-white/95 backdrop-blur z-50">
-  <div class="flex items-center justify-between border-b border-zinc-100 py-3">
+<header class="px-4 sm:px-6 lg:px-8 sticky top-0 bg-gray-900 shadow-lg backdrop-blur z-50">
+  <div class="flex items-center justify-between border-b border-gray-800 py-3">
     <div class="flex items-center gap-4">
       <a href="/" class="flex items-center gap-3">
-        <span class="text-lg font-semibold text-zinc-900">Infinit Foundation</span>
+        <span class="text-lg font-semibold text-white">Infinit Foundation</span>
       </a>
     </div>
     
@@ -12,7 +12,7 @@
         <div id="mobile-top-user-control-content">
           <a
             href="/sign-in"
-            class="text-sm text-zinc-900 hover:text-zinc-700 border border-zinc-200 rounded-lg px-4 py-2 hover:bg-zinc-50"
+            class="text-sm text-white hover:text-gray-300 border border-gray-700 rounded-lg px-4 py-2 hover:bg-gray-800"
           >
             Sign in
           </a>
@@ -32,7 +32,7 @@
       </script>
       <button
         type="button"
-        class="inline-flex items-center justify-center p-2 rounded-md text-zinc-700 hover:text-zinc-900 hover:bg-zinc-100"
+        class="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-800"
         phx-click={JS.toggle(to: "#mobile-menu")}
         aria-expanded="false"
       >
@@ -53,12 +53,12 @@
       <nav class="flex items-center gap-4">
         {live_patch("Our Mission",
           to: ~p"/mission",
-          class: "text-sm text-zinc-900 hover:text-zinc-700"
+          class: "text-sm text-gray-300 hover:text-white"
         )}
-        {live_patch("Impact", to: ~p"/impact", class: "text-sm text-zinc-900 hover:text-zinc-700")}
+        {live_patch("Impact", to: ~p"/impact", class: "text-sm text-gray-300 hover:text-white")}
         {live_patch("How It Works",
           to: ~p"/how-it-works",
-          class: "text-sm text-zinc-900 hover:text-zinc-700"
+          class: "text-sm text-gray-300 hover:text-white"
         )}
       </nav>
       <div class="flex items-center gap-4">
@@ -66,7 +66,7 @@
           <div id="user-control-content">
             <a
               href="/sign-in"
-              class="text-sm text-zinc-900 hover:text-zinc-700 border border-zinc-200 rounded-lg px-4 py-2 hover:bg-zinc-50"
+              class="text-sm text-white hover:text-gray-300 border border-gray-700 rounded-lg px-4 py-2 hover:bg-gray-800"
             >
               Sign in
             </a>
@@ -100,15 +100,18 @@
     <div class="px-2 pt-2 pb-3 space-y-1">
       {live_patch("Our Mission",
         to: ~p"/mission",
-        class: "block px-3 py-2 text-base font-medium text-zinc-900 hover:bg-zinc-100 rounded-md"
+        class:
+          "block px-3 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md"
       )}
       {live_patch("Impact",
         to: ~p"/impact",
-        class: "block px-3 py-2 text-base font-medium text-zinc-900 hover:bg-zinc-100 rounded-md"
+        class:
+          "block px-3 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md"
       )}
       {live_patch("How It Works",
         to: ~p"/how-it-works",
-        class: "block px-3 py-2 text-base font-medium text-zinc-900 hover:bg-zinc-100 rounded-md"
+        class:
+          "block px-3 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md"
       )}
       <div class="px-3 py-2">
         <a
