@@ -17,7 +17,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
       end)
       |> Enum.sort()
 
-    students_response = ApiClient.list_students(%{page: 1, limit: 10})
+    students_response = ApiClient.list_students(%{page: 1})
 
     # Get unique school IDs and fetch school details
     school_ids = students_response.students
@@ -50,27 +50,56 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
        total: students_response.total,
        sponsorship_amount: @sponsorship_amount,
        location_options: location_options,
-       selected_location: nil
+       selected_location: nil,
+       page_count: calculate_page_count(students_response.total),
+       current_page: 1
      )}
+  end
+
+  @impl true
+  def handle_event("change_page", %{"page" => page}, socket) do
+    page = String.to_integer(page)
+    params = %{page: page}
+
+    # Add location filter if one is selected
+    params = case socket.assigns.selected_location do
+      nil -> params
+      location ->
+        [country, city] = String.split(location, " - ")
+        Map.merge(params, %{country: country, city: city})
+    end
+
+    students_response = ApiClient.list_students(params)
+    students = transform_students(students_response.students)
+
+    {:noreply, assign(socket, students: students, current_page: page)}
   end
 
   @impl true
   def handle_event("filter_location", %{"location" => ""}, socket) do
     # Reset filter
-    students_response = ApiClient.list_students(%{page: 1, limit: 10})
-    {:noreply, assign(socket, :students, transform_students(students_response.students))}
+    students_response = ApiClient.list_students(%{page: 1})
+
+    {:noreply, assign(socket,
+      students: transform_students(students_response.students),
+      selected_location: nil,
+      current_page: 1
+    )}
   end
 
   def handle_event("filter_location", %{"location" => location}, socket) do
     [country, city] = String.split(location, " - ")
     students_response = ApiClient.list_students(%{
       page: 1,
-      limit: 10,
       country: country,
       city: city
     })
 
-    {:noreply, assign(socket, :students, transform_students(students_response.students))}
+    {:noreply, assign(socket,
+      students: transform_students(students_response.students),
+      selected_location: location,
+      current_page: 1
+    )}
   end
 
   @impl true
@@ -130,4 +159,6 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
       _ -> nil
     end
   end
+
+  defp calculate_page_count(total), do: div(total, ApiClient.default_page_size()) + 1
 end

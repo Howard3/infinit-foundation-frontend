@@ -3,6 +3,7 @@ defmodule InfinitFoundationFrontend.ApiClient do
 
   @base_url Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :base_url])
   @api_key Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :api_key])
+  @page_size 10
 
   @spec list_locations() :: [Location.t()]
   def list_locations do
@@ -18,10 +19,10 @@ defmodule InfinitFoundationFrontend.ApiClient do
     |> dbg
   end
 
-  @spec list_students(map()) :: PaginatedStudents.t()
+  @spec list_students() :: InfinitFoundationFrontend.Schemas.PaginatedStudents.t()
   def list_students(params \\ %{}) do
     params_with_defaults = Map.merge(
-      %{active: true, eligible_for_sponsorship: true},
+      %{active: true, eligible_for_sponsorship: true, limit: @page_size, page: 1},
       params
     )
 
@@ -92,4 +93,6 @@ defmodule InfinitFoundationFrontend.ApiClient do
       country: data["country"]
     }
   end
+
+  def default_page_size, do: @page_size
 end

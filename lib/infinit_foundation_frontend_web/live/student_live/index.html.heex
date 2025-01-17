@@ -5,7 +5,7 @@
         Students Needing Support
       </h2>
       <p class="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
-        Sponsor a child's education and nutrition for ${@sponsorship_amount} per year.
+        Sponsor a child's education and nutrition for $1 per day.
       </p>
     </div>
 
@@ -88,6 +88,18 @@
             </div>
           </div>
         </div>
+      <% end %>
+    </div>
+
+    <div class="mt-8 flex items-center justify-center space-x-2">
+      <%= for page <- 1..@page_count do %>
+        <button
+          phx-click="change_page"
+          phx-value-page={page}
+          class={"px-4 py-2 text-sm rounded-md #{if page == @current_page, do: "bg-red-600 text-white", else: "text-gray-700 hover:bg-gray-100"}"}
+        >
+          {page}
+        </button>
       <% end %>
     </div>
   </div>
