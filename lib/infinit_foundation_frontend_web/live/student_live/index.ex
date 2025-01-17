@@ -33,7 +33,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
       %{
         id: student.id,
-        name: "#{student.first_name} #{student.last_name}",
+        name: public_student_name(student.first_name, student.last_name),
         age: calculate_age(student.date_of_birth),
         grade: student.grade,
         school: school.name,
@@ -132,7 +132,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
       %{
         id: student.id,
-        name: "#{student.first_name} #{student.last_name}",
+        name: public_student_name(student.first_name, student.last_name),
         age: calculate_age(student.date_of_birth),
         grade: student.grade,
         school: school.name,
@@ -161,4 +161,5 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   end
 
   defp calculate_page_count(total), do: div(total, ApiClient.default_page_size()) + 1
+  defp public_student_name(first, last), do: first <> " " <> (last |> String.slice(0, 1)) <> "."
 end

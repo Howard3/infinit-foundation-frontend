@@ -3,7 +3,7 @@ defmodule InfinitFoundationFrontend.ApiClient do
 
   @base_url Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :base_url])
   @api_key Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :api_key])
-  @page_size 10
+  @page_size 18
 
   @spec list_locations() :: [Location.t()]
   def list_locations do

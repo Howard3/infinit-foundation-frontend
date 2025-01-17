@@ -8,22 +8,25 @@
         Sponsor a child's education and nutrition for $1 per day.
       </p>
     </div>
-
-    <div class="mt-8 flex justify-end">
-      <div class="w-64">
-        <form phx-change="filter_location">
-          <select
-            name="location"
-            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
-          >
-            <option value="">All Locations</option>
-            <%= for location <- @location_options do %>
-              <option value={location}>{location}</option>
-            <% end %>
-          </select>
-        </form>
+    
+<!-- Location filter; only show if there are multiple locations -->
+    <%= if @location_options |> length() > 1 do %>
+      <div class="mt-8 flex justify-end">
+        <div class="w-64">
+          <form phx-change="filter_location">
+            <select
+              name="location"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
+            >
+              <option value="">All Locations</option>
+              <%= for location <- @location_options do %>
+                <option value={location}>{location}</option>
+              <% end %>
+            </select>
+          </form>
+        </div>
       </div>
-    </div>
+    <% end %>
 
     <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
       <%= for student <- @students do %>
@@ -90,17 +93,20 @@
         </div>
       <% end %>
     </div>
-
-    <div class="mt-8 flex items-center justify-center space-x-2">
-      <%= for page <- 1..@page_count do %>
-        <button
-          phx-click="change_page"
-          phx-value-page={page}
-          class={"px-4 py-2 text-sm rounded-md #{if page == @current_page, do: "bg-red-600 text-white", else: "text-gray-700 hover:bg-gray-100"}"}
-        >
-          {page}
-        </button>
-      <% end %>
-    </div>
+    
+<!-- Pagination; only show if there are multiple pages -->
+    <%= if @page_count > 1 do %>
+      <div class="mt-8 flex items-center justify-center space-x-2">
+        <%= for page <- 1..@page_count do %>
+          <button
+            phx-click="change_page"
+            phx-value-page={page}
+            class={"px-4 py-2 text-sm rounded-md #{if page == @current_page, do: "bg-red-600 text-white", else: "text-gray-700 hover:bg-gray-100"}"}
+          >
+            {page}
+          </button>
+        <% end %>
+      </div>
+    <% end %>
   </div>
 </div>
