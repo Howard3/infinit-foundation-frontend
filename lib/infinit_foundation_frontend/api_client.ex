@@ -1,5 +1,5 @@
 defmodule InfinitFoundationFrontend.ApiClient do
-  alias InfinitFoundationFrontend.Schemas.{Location, Student, PaginatedStudents}
+  alias InfinitFoundationFrontend.Schemas.{Location, Student, PaginatedStudents, School}
 
   @base_url Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :base_url])
   @api_key Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :api_key])
@@ -71,6 +71,25 @@ defmodule InfinitFoundationFrontend.ApiClient do
       school_id: data["schoolId"],
       date_of_birth: data["dateOfBirth"],
       grade: data["grade"]
+    }
+  end
+
+  @spec list_schools([String.t()]) :: [School.t()]
+  def list_schools(school_ids) when is_list(school_ids) do
+    params = %{ids: Enum.join(school_ids, ",")}
+
+    Req.get!(url("/schools"), headers: default_headers(), params: params)
+    |> Map.get(:body)
+    |> Map.get("schools")
+    |> Enum.map(&to_school/1)
+  end
+
+  defp to_school(data) do
+    %School{
+      id: data["id"],
+      name: data["name"],
+      city: data["city"],
+      country: data["country"]
     }
   end
 end

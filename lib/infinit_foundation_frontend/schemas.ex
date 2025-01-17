@@ -13,7 +13,7 @@ defmodule InfinitFoundationFrontend.Schemas do
       first_name: String.t(),
       last_name: String.t(),
       profile_photo_url: String.t() | nil,
-      school_id: integer(),
+      school_id: String.t(),
       date_of_birth: String.t() | nil,
       grade: String.t() | nil
     }
@@ -26,5 +26,15 @@ defmodule InfinitFoundationFrontend.Schemas do
       total: integer()
     }
     defstruct [:students, :total]
+  end
+
+  defmodule School do
+    @type t :: %__MODULE__{
+      id: String.t(),
+      name: String.t(),
+      city: String.t(),
+      country: String.t()
+    }
+    defstruct [:id, :name, :city, :country]
   end
 end

@@ -19,16 +19,26 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
     students_response = ApiClient.list_students(%{page: 1, limit: 10})
 
+    # Get unique school IDs and fetch school details
+    school_ids = students_response.students
+                |> Enum.map(& &1.school_id)
+                |> Enum.uniq()
+
+    schools = ApiClient.list_schools(school_ids)
+    schools_by_id = Map.new(schools, fn school -> {school.id, school} end)
+
     # Transform the API response to match our expected format
     students = Enum.map(students_response.students, fn student ->
+      school = Map.get(schools_by_id, student.school_id)
+
       %{
         id: student.id,
         name: "#{student.first_name} #{student.last_name}",
         age: calculate_age(student.date_of_birth),
         grade: student.grade,
-        school: "School #{student.school_id}",
-        location: "Manila",
-        story: "Student story...",
+        school: school.name,
+        location: "#{school.city}, #{school.country}",
+        story: "",
         sponsored: false,
         image_url: student.profile_photo_url && ApiClient.photo_url(student.profile_photo_url)
       }
@@ -80,15 +90,25 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   end
 
   defp transform_students(students) do
+    # Get unique school IDs and fetch school details
+    school_ids = students
+                |> Enum.map(& &1.school_id)
+                |> Enum.uniq()
+
+    schools = ApiClient.list_schools(school_ids)
+    schools_by_id = Map.new(schools, fn school -> {school.id, school} end)
+
     Enum.map(students, fn student ->
+      school = Map.get(schools_by_id, student.school_id)
+
       %{
         id: student.id,
         name: "#{student.first_name} #{student.last_name}",
-        age: 8,
-        grade: "Grade 2",
-        school: "School #{student.school_id}",
-        location: "Manila",
-        story: "Student story...",
+        age: calculate_age(student.date_of_birth),
+        grade: student.grade,
+        school: school.name,
+        location: "#{school.city}, #{school.country}",
+        story: "",
         sponsored: false,
         image_url: student.profile_photo_url && ApiClient.photo_url(student.profile_photo_url)
       }

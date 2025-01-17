@@ -42,7 +42,7 @@
                 {student.name}
               </h3>
               <p class="text-sm text-gray-200">
-                {student.age} years old · Grade {student.grade}
+                {student.age} years old · Grade {student.grade} · {student.location}
               </p>
             </div>
             <%= if student.sponsored do %>
@@ -55,17 +55,20 @@
           </div>
 
           <div class="p-6">
-            <p class="text-gray-600 mb-6">
-              {student.story}
-            </p>
+            <div class="mb-4">
+              <p class="text-sm text-gray-500">
+                <span class="font-medium text-gray-900">{student.school}</span>
+                · {student.location}
+              </p>
+            </div>
+
+            <%= if student.story && student.story != "" do %>
+              <p class="text-gray-600 mb-6">
+                {student.story}
+              </p>
+            <% end %>
 
             <div class="space-y-4">
-              <div class="text-center">
-                <span class="text-lg font-semibold text-gray-900">
-                  Annual Sponsorship: ${@sponsorship_amount}
-                </span>
-              </div>
-
               <%= if student.sponsored do %>
                 <button
                   disabled
