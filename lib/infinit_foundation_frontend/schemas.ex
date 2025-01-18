@@ -37,4 +37,42 @@ defmodule InfinitFoundationFrontend.Schemas do
     }
     defstruct [:id, :name, :city, :country]
   end
+
+  defmodule StudentFilter do
+    @moduledoc """
+    Struct for filtering students in the list_students API.
+
+    Fields:
+    - page: Page number (default: 1)
+    - limit: Items per page (default: from config)
+    - active: Filter active students only (default: true)
+    - eligible_for_sponsorship: Filter eligible students (default: true)
+    - min_age: Minimum age filter (optional)
+    - max_age: Maximum age filter (optional)
+    - country: Filter by country (optional)
+    - city: Filter by city (optional)
+    """
+
+    defstruct [
+      :min_age,
+      :max_age,
+      :country,
+      :city,
+      page: 1,
+      limit: nil,
+      active: true,
+      eligible_for_sponsorship: true
+    ]
+
+    @type t :: %__MODULE__{
+      page: pos_integer(),
+      limit: pos_integer() | nil,
+      active: boolean(),
+      eligible_for_sponsorship: boolean(),
+      min_age: pos_integer() | nil,
+      max_age: pos_integer() | nil,
+      country: String.t() | nil,
+      city: String.t() | nil
+    }
+  end
 end

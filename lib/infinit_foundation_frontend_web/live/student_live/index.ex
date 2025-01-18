@@ -1,7 +1,7 @@
 defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   use InfinitFoundationFrontendWeb, :live_view
   alias InfinitFoundationFrontend.ApiClient
-  alias InfinitFoundationFrontend.Schemas.{Location, Student}
+  alias InfinitFoundationFrontend.Schemas.{Location, Student, StudentFilter}
 
   @sponsorship_amount 250 # USD
 
@@ -17,7 +17,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
       end)
       |> Enum.sort()
 
-    students_response = ApiClient.list_students(%{page: 1})
+    students_response = ApiClient.list_students(%StudentFilter{page: 1})
 
     # Get unique school IDs and fetch school details
     school_ids = students_response.students
@@ -51,6 +51,8 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
        sponsorship_amount: @sponsorship_amount,
        location_options: location_options,
        selected_location: nil,
+       selected_min_age: nil,
+       selected_max_age: nil,
        page_count: calculate_page_count(students_response.total),
        current_page: 1
      )}
@@ -59,47 +61,93 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   @impl true
   def handle_event("change_page", %{"page" => page}, socket) do
     page = String.to_integer(page)
-    params = %{page: page}
 
-    # Add location filter if one is selected
-    params = case socket.assigns.selected_location do
-      nil -> params
+    filter = %StudentFilter{
+      page: page,
+      min_age: socket.assigns.selected_min_age,
+      max_age: socket.assigns.selected_max_age
+    }
+
+    filter = case socket.assigns.selected_location do
+      nil -> filter
       location ->
         [country, city] = String.split(location, " - ")
-        Map.merge(params, %{country: country, city: city})
+        %{filter | country: country, city: city}
     end
 
-    students_response = ApiClient.list_students(params)
+    students_response = ApiClient.list_students(filter)
     students = transform_students(students_response.students)
 
     {:noreply, assign(socket, students: students, current_page: page)}
   end
 
   @impl true
-  def handle_event("filter_location", %{"location" => ""}, socket) do
-    # Reset filter
-    students_response = ApiClient.list_students(%{page: 1})
+  def handle_event("filter_age", params, socket) do
+    min_age = parse_age(params["min_age"])
+    max_age = parse_age(params["max_age"])
 
-    {:noreply, assign(socket,
-      students: transform_students(students_response.students),
-      selected_location: nil,
-      current_page: 1
-    )}
+    filter = %StudentFilter{
+      page: 1,
+      min_age: min_age,
+      max_age: max_age
+    }
+
+    # Include location filter if set
+    filter = case socket.assigns.selected_location do
+      nil -> filter
+      location ->
+        [country, city] = String.split(location, " - ")
+        %{filter | country: country, city: city}
+    end
+
+    students_response = ApiClient.list_students(filter)
+
+    {:noreply,
+     assign(socket,
+       students: transform_students(students_response.students),
+       selected_min_age: min_age,
+       selected_max_age: max_age,
+       current_page: 1
+     )}
+  end
+
+  @impl true
+  def handle_event("filter_location", %{"location" => ""}, socket) do
+    filter = %StudentFilter{
+      page: 1,
+      min_age: socket.assigns.selected_min_age,
+      max_age: socket.assigns.selected_max_age
+    }
+
+    students_response = ApiClient.list_students(filter)
+
+    {:noreply,
+     assign(socket,
+       students: transform_students(students_response.students),
+       selected_location: nil,
+       current_page: 1
+     )}
   end
 
   def handle_event("filter_location", %{"location" => location}, socket) do
     [country, city] = String.split(location, " - ")
-    students_response = ApiClient.list_students(%{
+
+    filter = %StudentFilter{
       page: 1,
       country: country,
-      city: city
-    })
+      city: city,
+      min_age: socket.assigns.selected_min_age,
+      max_age: socket.assigns.selected_max_age
+    }
 
-    {:noreply, assign(socket,
-      students: transform_students(students_response.students),
-      selected_location: location,
-      current_page: 1
-    )}
+    students_response = ApiClient.list_students(filter)
+
+    {:noreply,
+     assign(socket,
+       students: transform_students(students_response.students),
+       selected_location: location,
+       current_page: 1
+     )}
   end
 
   @impl true
@@ -118,6 +166,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
     {:noreply, assign(socket, :students, students)}
   end
 
+  defp transform_students([]), do: []
   defp transform_students(students) do
     # Get unique school IDs and fetch school details
     school_ids = students
@@ -162,4 +211,12 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
   defp calculate_page_count(total), do: div(total, ApiClient.default_page_size()) + 1
   defp public_student_name(first, last), do: first <> " " <> (last |> String.slice(0, 1)) <> "."
+
+  defp parse_age(value) when is_binary(value) do
+    case Integer.parse(value) do
+      {age, ""} when age > 0 -> age
+      _ -> nil
+    end
+  end
+  defp parse_age(_), do: nil
 end

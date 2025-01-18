@@ -1,5 +1,11 @@
 defmodule InfinitFoundationFrontend.ApiClient do
-  alias InfinitFoundationFrontend.Schemas.{Location, Student, PaginatedStudents, School}
+  alias InfinitFoundationFrontend.Schemas.{
+    Location,
+    Student,
+    PaginatedStudents,
+    School,
+    StudentFilter
+  }
 
   @base_url Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :base_url])
   @api_key Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :api_key])
@@ -19,12 +25,19 @@ defmodule InfinitFoundationFrontend.ApiClient do
     |> dbg
   end
 
-  @spec list_students() :: InfinitFoundationFrontend.Schemas.PaginatedStudents.t()
-  def list_students(params \\ %{}) do
-    params_with_defaults = Map.merge(
-      %{active: true, eligible_for_sponsorship: true, limit: @page_size, page: 1},
-      params
-    )
+  @spec list_students(StudentFilter.t()) :: PaginatedStudents.t()
+  def list_students(filters \\ %StudentFilter{})
+
+  def list_students(%StudentFilter{} = filters) do
+    filters
+    |> Map.from_struct()
+    |> Enum.reject(fn {_k, v} -> is_nil(v) end)
+    |> Map.new()
+    |> do_list_students()
+  end
+
+  defp do_list_students(params) do
+    params_with_defaults = Map.put_new(params, :limit, @page_size)
 
     response = Req.get!(url("/students"), headers: default_headers(), params: params_with_defaults)
     body = response.body
@@ -33,16 +46,6 @@ defmodule InfinitFoundationFrontend.ApiClient do
       students: Enum.map(body["students"], &to_student/1),
       total: body["total"]
     }
-  end
-
-  def list_students_by_location(params \\ %{}) do
-    params_with_defaults = Map.merge(
-      %{active: true, eligible_for_sponsorship: true},
-      params
-    )
-
-    Req.get!(url("/students/by-location"), headers: default_headers(), params: params_with_defaults)
-    |> Map.get(:body)
   end
 
   def photo_url(relative_path) when is_binary(relative_path) do

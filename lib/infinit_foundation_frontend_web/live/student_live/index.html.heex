@@ -10,23 +10,47 @@
     </div>
     
 <!-- Location filter; only show if there are multiple locations -->
-    <%= if @location_options |> length() > 1 do %>
-      <div class="mt-8 flex justify-end">
-        <div class="w-64">
-          <form phx-change="filter_location">
-            <select
-              name="location"
-              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
-            >
-              <option value="">All Locations</option>
-              <%= for location <- @location_options do %>
-                <option value={location}>{location}</option>
-              <% end %>
-            </select>
-          </form>
-        </div>
+    <div class="mt-8 flex justify-end gap-4">
+      <div class="w-64">
+        <form phx-change="filter_location">
+          <select
+            name="location"
+            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
+          >
+            <option value="">All Locations</option>
+            <%= for location <- @location_options do %>
+              <option value={location} selected={@selected_location == location}>
+                {location}
+              </option>
+            <% end %>
+          </select>
+        </form>
       </div>
-    <% end %>
+
+      <div class="flex gap-2 items-center">
+        <form phx-change="filter_age" class="flex gap-2 items-center">
+          <div class="w-28">
+            <input
+              type="number"
+              name="min_age"
+              value={@selected_min_age}
+              placeholder="Min age"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
+            />
+          </div>
+          <span class="text-gray-500">to</span>
+          <div class="w-28">
+            <input
+              type="number"
+              name="max_age"
+              value={@selected_max_age}
+              placeholder="Max age"
+              class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
 
     <div class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
       <%= for student <- @students do %>
