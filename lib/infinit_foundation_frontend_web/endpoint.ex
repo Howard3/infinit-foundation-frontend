@@ -6,8 +6,8 @@ defmodule InfinitFoundationFrontendWeb.Endpoint do
   # Set :encryption_salt if you would also like to encrypt it.
   @session_options [
     store: :cookie,
-    key: "_infinit_foundation_frontend_key",
-    signing_salt: "kjDm5VDA",
+    key: "_infinit_foundation_key",
+    signing_salt: System.get_env("SESSION_SIGNING_SALT"),  # We'll make this configurable later
     same_site: "Lax"
   ]
 

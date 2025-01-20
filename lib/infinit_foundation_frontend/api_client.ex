@@ -22,7 +22,12 @@ defmodule InfinitFoundationFrontend.ApiClient do
         cities: location["cities"]
       }
     end)
-    |> dbg
+  end
+
+  def get_student(student_id) do
+    Req.get!(url("/students/#{student_id}"), headers: default_headers())
+    |> Map.get(:body)
+    |> to_student()
   end
 
   @spec list_students(StudentFilter.t()) :: PaginatedStudents.t()

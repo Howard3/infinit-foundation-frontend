@@ -71,3 +71,13 @@ import_config "#{config_env()}.exs"
 config :infinit_foundation_frontend, :feeding_backend,
     base_url: System.get_env("FEEDING_BACKEND_URL", "http://localhost:3000/api"),
     api_key: System.get_env("FEEDING_BACKEND_API_KEY")
+
+config :infinit_foundation_frontend, InfinitFoundationFrontend.Guardian,
+  issuer: System.get_env("CLERK_FRONTEND_API"),
+  allowed_algos: ["RS256"],
+  verify_issuer: true,
+  secret_fetcher: InfinitFoundationFrontend.Guardian.SecretFetcher
+
+config :infinit_foundation_frontend, :clerk,
+  frontend_api: System.get_env("CLERK_FRONTEND_API"),
+  publishable_key: System.get_env("CLERK_PUBLISHABLE_KEY")

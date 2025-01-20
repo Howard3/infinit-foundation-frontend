@@ -20,15 +20,26 @@ defmodule InfinitFoundationFrontendWeb.Router do
     get "/", PageController, :home
     get "/sign-in", AuthController, :sign_in
     get "/sign-up", AuthController, :sign_up
-
-    live "/students", StudentLive.Index, :index
+    get "/sign-in-callback", AuthController, :sign_in_callback
+    get "/sign-out", AuthController, :sign_out
     live "/how-it-works", HowItWorksLive, :index
     live "/mission", MissionLive, :index
     live "/impact", ImpactLive, :index
-    get "/sign-in-callback", AuthController, :sign_in_callback
+    live "/students", StudentLive.Index, :index
 
     # Add this new route to handle image proxying
     get "/student/profile/photo/*path", ImageController, :proxy_photo
+  end
+
+  # Protected routes that require authentication
+  scope "/", InfinitFoundationFrontendWeb do
+    pipe_through [:browser, :require_auth]
+
+    live "/sponsor/:id", SponsorLive.Index
+  end
+
+  pipeline :require_auth do
+    plug InfinitFoundationFrontendWeb.Plugs.EnsureAuth
   end
 
   # Other scopes may use custom stacks.

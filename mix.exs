@@ -56,7 +56,9 @@ defmodule InfinitFoundationFrontend.MixProject do
       {:jason, "~> 1.2"},
       {:dns_cluster, "~> 0.1.1"},
       {:bandit, "~> 1.5"},
-      {:req, "~> 0.5.0"}
+      {:req, "~> 0.5.0"},
+      {:guardian, "~> 2.3"},
+      {:jose, "~> 1.11"}
     ]
   end
 

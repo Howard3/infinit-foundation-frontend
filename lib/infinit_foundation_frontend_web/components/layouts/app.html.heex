@@ -79,7 +79,7 @@
             const userControlContent = document.getElementById('user-control-content');
             if (Clerk.user) {
               userControlContent.innerHTML = '';
-              await Clerk.mountUserButton(userControlContent);
+              await Clerk.mountUserButton(userControlContent, {afterSignOutUrl: "/sign-out"});
             }
 
             userControl.classList.remove('hidden');

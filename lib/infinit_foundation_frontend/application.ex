@@ -16,7 +16,8 @@ defmodule InfinitFoundationFrontend.Application do
       # Start a worker by calling: InfinitFoundationFrontend.Worker.start_link(arg)
       # {InfinitFoundationFrontend.Worker, arg},
       # Start to serve requests, typically the last entry
-      InfinitFoundationFrontendWeb.Endpoint
+      InfinitFoundationFrontendWeb.Endpoint,
+      InfinitFoundationFrontend.SponsorshipLocks
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

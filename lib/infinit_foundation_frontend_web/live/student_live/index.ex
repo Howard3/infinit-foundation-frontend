@@ -1,12 +1,12 @@
 defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   use InfinitFoundationFrontendWeb, :live_view
   alias InfinitFoundationFrontend.ApiClient
-  alias InfinitFoundationFrontend.Schemas.{Location, Student, StudentFilter}
-
-  @sponsorship_amount 250 # USD
+  alias InfinitFoundationFrontend.Schemas.{Location, StudentFilter}
+  alias InfinitFoundationFrontend.Config.Sponsorship
 
   @impl true
-  def mount(_params, _session, socket) do
+  def mount(_params, session, socket) do
+    socket = assign(socket, :user_id, session["user_id"])
     locations = ApiClient.list_locations()
 
     # Create combined location options for the dropdown
@@ -18,37 +18,13 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
       |> Enum.sort()
 
     students_response = ApiClient.list_students(%StudentFilter{page: 1})
-
-    # Get unique school IDs and fetch school details
-    school_ids = students_response.students
-                |> Enum.map(& &1.school_id)
-                |> Enum.uniq()
-
-    schools = ApiClient.list_schools(school_ids)
-    schools_by_id = Map.new(schools, fn school -> {school.id, school} end)
-
-    # Transform the API response to match our expected format
-    students = Enum.map(students_response.students, fn student ->
-      school = Map.get(schools_by_id, student.school_id)
-
-      %{
-        id: student.id,
-        name: public_student_name(student.first_name, student.last_name),
-        age: calculate_age(student.date_of_birth),
-        grade: student.grade,
-        school: school.name,
-        location: "#{school.city}, #{school.country}",
-        story: "",
-        sponsored: false,
-        image_url: student.profile_photo_url && ApiClient.photo_url(student.profile_photo_url)
-      }
-    end)
+    students = transform_students(students_response.students)
 
     {:ok,
      assign(socket,
        students: students,
        total: students_response.total,
-       sponsorship_amount: @sponsorship_amount,
+       sponsorship: Sponsorship.sponsorship_details(),
        location_options: location_options,
        selected_location: nil,
        selected_min_age: nil,
@@ -151,20 +127,35 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   end
 
   @impl true
-  def handle_event("sponsor", %{"id" => id}, socket) do
-    # This would eventually handle the sponsorship process
-    # For now, just show what we'd do
-    student_id = String.to_integer(id)
-    students = Enum.map(socket.assigns.students, fn student ->
-      if student.id == student_id do
-        %{student | sponsored: true}
-      else
-        student
-      end
-    end)
+  def handle_event("request_sponsorship", %{"id" => id}, socket) do
+    case socket.assigns.user_id do
+      nil ->
+        {:noreply,
+         socket
+         |> put_flash(:error, "Please sign in to sponsor a student")
+         |> push_navigate(to: ~p"/sign-in")}
 
-    {:noreply, assign(socket, :students, students)}
+      holder_id ->
+        student_id = id
+        case InfinitFoundationFrontend.SponsorshipLocks.request_lock(student_id, holder_id) do
+          :ok ->
+            # Start the periodic lock extension
+            Process.send_after(self(), :extend_lock, :timer.minutes(5))
+
+            # Navigate to checkout while maintaining the lock
+            {:noreply,
+             socket
+             |> assign(:sponsorship_lock, student_id)
+             |> push_navigate(to: ~p"/sponsor/#{student_id}")}
+
+          {:error, :already_locked} ->
+            {:noreply,
+             socket
+             |> put_flash(:error, "This student is currently in the process of being sponsored by someone else")}
+        end
+    end
   end
+
 
   defp transform_students([]), do: []
   defp transform_students(students) do
