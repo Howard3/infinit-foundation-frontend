@@ -4,7 +4,8 @@ defmodule InfinitFoundationFrontend.ApiClient do
     Student,
     PaginatedStudents,
     School,
-    StudentFilter
+    StudentFilter,
+    Sponsorship
   }
 
   @base_url Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :base_url])
@@ -126,6 +127,29 @@ defmodule InfinitFoundationFrontend.ApiClient do
     ) do
       %{status: 200, body: %{"success" => true}} -> :ok
       response -> {:error, response}
+    end
+  end
+
+  @doc """
+  Gets a list of students currently sponsored by the given sponsor.
+
+  Returns a list of sponsorship records containing student IDs and date ranges.
+  """
+  @spec list_sponsored_students(String.t()) :: {:ok, [Sponsorship.t()]} | {:error, any()}
+  def list_sponsored_students(sponsor_id) do
+    case Req.get!(url("/sponsors/#{sponsor_id}/students"), headers: default_headers()) do
+      %{status: 200, body: sponsorships} when is_list(sponsorships) ->
+        {:ok,
+         Enum.map(sponsorships, fn sponsorship ->
+           %Sponsorship{
+             student_id: sponsorship["studentId"],
+             start_date: Date.from_iso8601!(sponsorship["startDate"]),
+             end_date: Date.from_iso8601!(sponsorship["endDate"])
+           }
+         end)}
+
+      response ->
+        {:error, response}
     end
   end
 end

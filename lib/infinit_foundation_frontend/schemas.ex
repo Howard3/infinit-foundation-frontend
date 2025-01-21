@@ -75,4 +75,18 @@ defmodule InfinitFoundationFrontend.Schemas do
       city: String.t() | nil
     }
   end
+
+  defmodule Sponsorship do
+    @moduledoc """
+    Schema representing a sponsorship record linking a sponsor to a student.
+    """
+
+    @type t :: %__MODULE__{
+      student_id: String.t(),
+      start_date: Date.t(),
+      end_date: Date.t()
+    }
+
+    defstruct [:student_id, :start_date, :end_date]
+  end
 end

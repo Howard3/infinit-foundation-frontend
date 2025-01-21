@@ -60,6 +60,10 @@
           to: ~p"/how-it-works",
           class: "text-sm text-gray-300 hover:text-white"
         )}
+        {live_patch("Dashboard",
+          to: ~p"/dashboard",
+          class: "text-sm text-gray-300 hover:text-white"
+        )}
       </nav>
       <div class="flex items-center gap-4">
         <div id="user-control" phx-update="ignore" class="hidden">
@@ -110,6 +114,11 @@
       )}
       {live_patch("How It Works",
         to: ~p"/how-it-works",
+        class:
+          "block px-3 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md"
+      )}
+      {live_patch("Dashboard",
+        to: ~p"/dashboard",
         class:
           "block px-3 py-2 text-base font-medium text-gray-300 hover:text-white hover:bg-gray-800 rounded-md"
       )}

@@ -3,11 +3,18 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
   alias InfinitFoundationFrontend.ApiClient
   alias InfinitFoundationFrontend.Config.Sponsorship
 
+  require Logger
+
   @impl true
   def mount(%{"id" => student_id} = params, session, socket) do
-    socket = assign(socket, :user_id, session["user_id"])
+    user_id = session["user_id"]
+    socket = assign(socket, :user_id, user_id)
     socket = assign(socket, :stripe_public_key, Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key])
     socket = assign(socket, :setup_intent, nil)
+    parent = self()
+
+    {:ok, checkout_result} = prepare_checkout(student_id, user_id)
+
     # Verify the lock is still valid
     case InfinitFoundationFrontend.SponsorshipLocks.extend_lock(student_id, socket.assigns.user_id) do
       :ok ->
@@ -17,13 +24,16 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
         # Get student details
         student = ApiClient.get_student(student_id)
         sponsorship = Sponsorship.sponsorship_details()
+        socket = push_event(socket, "test-event", %{})
 
         {:ok,
          assign(socket,
            student: student,
            sponsorship: sponsorship,
            page_title: "Complete Sponsorship",
-           stripe_public_key: Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key]
+           stripe_public_key: Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key],
+           payment_intent_id: checkout_result.payment_intent_id,
+           client_secret: checkout_result.client_secret
          )}
 
       {:error, :not_lock_holder} ->
@@ -45,20 +55,19 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
     {:noreply, socket}
   end
 
-  def handle_event("checkout", _params, socket) do
+  defp prepare_checkout(student_id, user_id) do
+    Logger.info("Preparing checkout for student #{student_id} with user #{user_id}")
     {:ok, payment_intent} = Stripe.PaymentIntent.create(%{
       amount: Sponsorship.amount_in_cents(),
       currency: Sponsorship.currency,
       payment_method_types: ["card"],
       metadata: %{
-        student_id: socket.assigns.student.id,
-        sponsor_id: socket.assigns.user_id
+        student_id: student_id,
+        sponsor_id: user_id
       }
     })
-    socket = push_event(socket, "payment-intent", %{
-      payment_intent: payment_intent.id,
-      client_secret: payment_intent.client_secret
-    })
-    {:noreply, socket}
+
+    {:ok, %{payment_intent_id: payment_intent.id, client_secret: payment_intent.client_secret}}
   end
+
 end

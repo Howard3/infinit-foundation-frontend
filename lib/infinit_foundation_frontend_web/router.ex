@@ -37,6 +37,7 @@ defmodule InfinitFoundationFrontendWeb.Router do
 
     live "/sponsor/:id", SponsorLive.Index
     get "/sponsorships/success", SponsorshipController, :success
+    live "/dashboard", DashboardLive, :index
   end
 
   pipeline :require_auth do
