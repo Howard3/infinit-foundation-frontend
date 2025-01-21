@@ -103,4 +103,29 @@ defmodule InfinitFoundationFrontend.ApiClient do
   end
 
   def default_page_size, do: @page_size
+
+  @doc """
+  Creates a sponsorship record for a student.
+  """
+  def create_sponsorship(%{student_id: student_id, sponsor_id: sponsor_id} = _params) do
+    # Get the sponsorship end date from config
+    end_date = InfinitFoundationFrontend.Config.Sponsorship.ending_timestamp()
+    # Use today as the start date
+    start_date = Date.utc_today() |> Date.to_string()
+
+    body = %{
+      sponsorId: sponsor_id,
+      startDate: start_date,
+      endDate: end_date
+    }
+
+    case Req.post!(
+      url("/students/#{student_id}/sponsor"),
+      headers: default_headers(),
+      json: body
+    ) do
+      %{status: 200, body: %{"success" => true}} -> :ok
+      response -> {:error, response}
+    end
+  end
 end

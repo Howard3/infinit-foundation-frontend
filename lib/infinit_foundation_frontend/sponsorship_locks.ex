@@ -69,7 +69,6 @@ defmodule InfinitFoundationFrontend.SponsorshipLocks do
       _ ->
         {:reply, {:error, :not_lock_holder}, state}
     end
-    |> dbg()
   end
 
   @impl true

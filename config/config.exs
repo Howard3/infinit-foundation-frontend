@@ -81,3 +81,9 @@ config :infinit_foundation_frontend, InfinitFoundationFrontend.Guardian,
 config :infinit_foundation_frontend, :clerk,
   frontend_api: System.get_env("CLERK_FRONTEND_API"),
   publishable_key: System.get_env("CLERK_PUBLISHABLE_KEY")
+
+config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET_KEY")
+
+config :infinit_foundation_frontend, :stripe,
+  public_key: System.get_env("STRIPE_PUBLIC_KEY"),
+  secret_key: System.get_env("STRIPE_SECRET_KEY")

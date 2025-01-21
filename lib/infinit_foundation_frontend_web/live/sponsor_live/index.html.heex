@@ -1,4 +1,4 @@
-<div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12">
+<div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 py-12" phx-mounted={JS.push("checkout")}>
   <div class="space-y-8">
     <div>
       <h1 class="text-2xl font-bold tracking-tight text-gray-900">
@@ -30,13 +30,86 @@
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6">
       <!-- Payment form will go here -->
       <div class="text-center">
-        <p class="text-sm text-gray-600 mb-4">
-          Payment processing coming soon
+        <p class="text-sm text-gray-600 mb-4" id="payment-form-setup-message">
+          Setting up secure payment system...
         </p>
-        <button class="w-full rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600">
-          Complete Sponsorship
-        </button>
+
+        <form id="payment-form" class="hidden">
+          <div>
+            <h3 class="text-sm font-medium text-gray-700 mb-2 text-left">Billing Address</h3>
+            <div id="address-element" class="mb-4 rounded-lg border border-gray-300 p-4 shadow-sm">
+            </div>
+          </div>
+          <div>
+            <h3 class="text-sm font-medium text-gray-700 mb-2 text-left">Payment Details</h3>
+            <div id="card-element" class="rounded-lg border border-gray-300 p-4 shadow-sm"></div>
+          </div>
+          <button
+            type="submit"
+            class="mt-4 w-full rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+          >
+            Submit Payment
+          </button>
+          <div class="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-500">
+            <span>Secured by Stripe</span>
+          </div>
+        </form>
+        <div id="payment-errors" class="text-red-500"></div>
       </div>
     </div>
   </div>
 </div>
+
+<script src="https://js.stripe.com/v3/">
+</script>
+
+<script type="text/javascript">
+  if (window.stripeConfig === undefined) {
+    const stripe = Stripe("<%= @stripe_public_key %>");
+    const elements = stripe.elements();
+    const addressElement = elements.create("address", {
+      mode: "billing",
+      fields: {
+        country: "US"
+      }
+    });
+    const cardElement = elements.create("card");
+    window.stripeConfig = { stripe, elements, addressElement, cardElement };
+  }
+
+  (function() {
+    const setupMessage = document.getElementById("payment-form-setup-message");
+    const paymentErrors = document.getElementById("payment-errors");
+    const form = document.getElementById("payment-form");
+
+    window.addEventListener("phx:payment-intent", async (event) => {
+      // hide setup message and show form for payments
+      setupMessage.classList.add("hidden");
+      form.classList.remove("hidden");
+
+      window.stripeConfig.addressElement.mount("#address-element");
+      window.stripeConfig.cardElement.mount("#card-element");
+
+      const { payment_intent, client_secret } = event.detail;
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const billingDetails = await window.stripeConfig.addressElement.getValue();
+
+        const { payment, error } = await window.stripeConfig.stripe.confirmCardPayment(client_secret, {
+          payment_method: {
+            card: window.stripeConfig.cardElement,
+            billing_details: billingDetails.value
+          }
+        });
+
+        if (error) {
+          paymentErrors.textContent = error.message;
+          return;
+        }
+
+        window.location.href = "/sponsorships/success?payment_intent_id=" + payment_intent;
+      });
+    });
+  })();
+</script>

@@ -6,7 +6,8 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
   @impl true
   def mount(%{"id" => student_id} = params, session, socket) do
     socket = assign(socket, :user_id, session["user_id"])
-
+    socket = assign(socket, :stripe_public_key, Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key])
+    socket = assign(socket, :setup_intent, nil)
     # Verify the lock is still valid
     case InfinitFoundationFrontend.SponsorshipLocks.extend_lock(student_id, socket.assigns.user_id) do
       :ok ->
@@ -21,7 +22,8 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
          assign(socket,
            student: student,
            sponsorship: sponsorship,
-           page_title: "Complete Sponsorship"
+           page_title: "Complete Sponsorship",
+           stripe_public_key: Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key]
          )}
 
       {:error, :not_lock_holder} ->
@@ -40,6 +42,23 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
       Process.send_after(self(), :extend_lock, :timer.minutes(5))
     end
 
+    {:noreply, socket}
+  end
+
+  def handle_event("checkout", _params, socket) do
+    {:ok, payment_intent} = Stripe.PaymentIntent.create(%{
+      amount: Sponsorship.amount_in_cents(),
+      currency: Sponsorship.currency,
+      payment_method_types: ["card"],
+      metadata: %{
+        student_id: socket.assigns.student.id,
+        sponsor_id: socket.assigns.user_id
+      }
+    })
+    socket = push_event(socket, "payment-intent", %{
+      payment_intent: payment_intent.id,
+      client_secret: payment_intent.client_secret
+    })
     {:noreply, socket}
   end
 end
