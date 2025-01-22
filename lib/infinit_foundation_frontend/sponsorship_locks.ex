@@ -75,21 +75,11 @@ defmodule InfinitFoundationFrontend.SponsorshipLocks do
     end
   end
 
-  @impl true
-  def handle_cast({:release_lock, student_id, holder_id}, state) do
-    Logger.info("Releasing lock for student #{student_id} by holder #{holder_id}")
-    case :ets.lookup(@table_name, student_id) do
-      [{^student_id, ^holder_id, _expiry}] ->
-        :ets.delete(@table_name, student_id)
-        {:noreply, state}
-      _ ->
-        {:noreply, state}
-    end
-  end
 
   @impl true
   def handle_call({:check_locks, student_ids, holder_id}, _from, state) do
     result = Enum.map(student_ids, fn student_id ->
+      student_id = to_string(student_id)
       case :ets.lookup(@table_name, student_id) do
         [] ->
           :free
@@ -109,6 +99,18 @@ defmodule InfinitFoundationFrontend.SponsorshipLocks do
         {:reply, {:ok, expiry}, state}
       [] ->
         {:reply, {:error, :not_found}, state}
+    end
+  end
+
+  @impl true
+  def handle_cast({:release_lock, student_id, holder_id}, state) do
+    Logger.info("Releasing lock for student #{student_id} by holder #{holder_id}")
+    case :ets.lookup(@table_name, student_id) do
+      [{^student_id, ^holder_id, _expiry}] ->
+        :ets.delete(@table_name, student_id)
+        {:noreply, state}
+      _ ->
+        {:noreply, state}
     end
   end
 

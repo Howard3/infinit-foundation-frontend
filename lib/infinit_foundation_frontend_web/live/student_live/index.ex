@@ -18,7 +18,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
       |> Enum.sort()
 
     students_response = ApiClient.list_students(%StudentFilter{page: 1})
-    students = transform_students(students_response.students)
+    students = transform_students(students_response.students, socket.assigns.user_id)
 
     {:ok,
      assign(socket,
@@ -52,7 +52,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
     end
 
     students_response = ApiClient.list_students(filter)
-    students = transform_students(students_response.students)
+    students = transform_students(students_response.students, socket.assigns.user_id)
 
     {:noreply, assign(socket, students: students, current_page: page)}
   end
@@ -80,7 +80,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
     {:noreply,
      assign(socket,
-       students: transform_students(students_response.students),
+       students: transform_students(students_response.students, socket.assigns.user_id),
        selected_min_age: min_age,
        selected_max_age: max_age,
        current_page: 1
@@ -99,7 +99,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
     {:noreply,
      assign(socket,
-       students: transform_students(students_response.students),
+       students: transform_students(students_response.students, socket.assigns.user_id),
        selected_location: nil,
        current_page: 1
      )}
@@ -120,7 +120,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
     {:noreply,
      assign(socket,
-       students: transform_students(students_response.students),
+       students: transform_students(students_response.students, socket.assigns.user_id),
        selected_location: location,
        current_page: 1
      )}
@@ -157,8 +157,8 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   end
 
 
-  defp transform_students([]), do: []
-  defp transform_students(students) do
+  defp transform_students([], _), do: []
+  defp transform_students(students, user_id) do
     # Get unique school IDs and fetch school details
     school_ids = students
                 |> Enum.map(& &1.school_id)
@@ -167,7 +167,12 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
     schools = ApiClient.list_schools(school_ids)
     schools_by_id = Map.new(schools, fn school -> {school.id, school} end)
 
-    Enum.map(students, fn student ->
+    # Get lock status for all students
+    student_ids = Enum.map(students, & &1.id)
+    lock_statuses = InfinitFoundationFrontend.SponsorshipLocks.check_locks(student_ids, user_id)
+    dbg(lock_statuses)
+
+    Enum.zip_with([students, lock_statuses], fn [student, lock_status] ->
       school = Map.get(schools_by_id, student.school_id)
 
       %{
@@ -179,6 +184,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
         location: "#{school.city}, #{school.country}",
         story: "",
         sponsored: false,
+        lock_status: lock_status,
         image_url: student.profile_photo_url && ApiClient.photo_url(student.profile_photo_url)
       }
     end)

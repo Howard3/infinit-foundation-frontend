@@ -18,10 +18,8 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
     # Verify the lock is still valid
     case InfinitFoundationFrontend.SponsorshipLocks.get_lock_info(student_id) do
       {:ok, expiry_time} ->
-        dbg(expiry_time)
         remaining_seconds = DateTime.diff(expiry_time, DateTime.utc_now())
         remaining_minutes = div(remaining_seconds, 60)
-        |> dbg
 
         # Start the periodic lock extension
         Process.send_after(self(), :extend_lock, :timer.minutes(5))
