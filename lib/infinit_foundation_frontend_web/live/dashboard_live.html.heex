@@ -38,13 +38,21 @@
               <div class="relative h-48">
                 <img
                   src={sponsorship.student.image_url}
-                  alt={sponsorship.student.name}
+                  alt={
+                    ViewHelper.format_student_name(
+                      sponsorship.student.first_name,
+                      sponsorship.student.last_name
+                    )
+                  }
                   class="w-full h-full object-cover"
                 />
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
                 <div class="absolute bottom-4 left-4 right-4">
                   <h3 class="text-xl font-semibold text-white">
-                    {sponsorship.student.name}
+                    {ViewHelper.format_student_name(
+                      sponsorship.student.first_name,
+                      sponsorship.student.last_name
+                    )}
                   </h3>
                   <p class="text-sm text-gray-200">
                     Grade {sponsorship.student.grade} · {sponsorship.student.location}
@@ -80,11 +88,21 @@
                 <div class="flex items-center">
                   <img
                     src={update.student.image_url}
-                    alt={update.student.name}
+                    alt={
+                      ViewHelper.format_student_name(
+                        update.student.first_name,
+                        update.student.last_name
+                      )
+                    }
                     class="h-10 w-10 rounded-full object-cover"
                   />
                   <div class="ml-4">
-                    <h3 class="text-sm font-medium text-gray-900">{update.student.name}</h3>
+                    <h3 class="text-sm font-medium text-gray-900">
+                      {ViewHelper.format_student_name(
+                        update.student.first_name,
+                        update.student.last_name
+                      )}
+                    </h3>
                     <p class="text-sm text-gray-500">{update.date}</p>
                   </div>
                 </div>

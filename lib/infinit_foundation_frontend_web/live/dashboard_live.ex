@@ -2,6 +2,7 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
   use InfinitFoundationFrontendWeb, :live_view
   alias InfinitFoundationFrontend.ApiClient
   alias InfinitFoundationFrontend.Schemas.{Student, Sponsorship}
+  alias InfinitFoundationFrontendWeb.ViewHelper
 
   def mount(_params, session, socket) do
     socket = assign(socket, :user_id, session["user_id"])
@@ -18,7 +19,8 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
             %{
               student: %{
                 id: student.id |> to_string,
-                name: "#{student.first_name} #{student.last_name}",
+                first_name: student.first_name,
+                last_name: student.last_name,
                 grade: student.grade,
                 location: get_location(student),
                 image_url: ApiClient.photo_url(student.profile_photo_url)
@@ -70,12 +72,11 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
 
     charges = results.data
     |> Enum.map(fn charge ->
-      dbg(socket.assigns.active_sponsorships)
       student_id = charge.metadata["student_id"]
       student = socket.assigns.active_sponsorships |> Enum.find(fn student -> student.student.id == student_id end)
       student_name = case student do
         nil -> "Unknown Student"
-        _ -> student.student.name
+        _ -> ViewHelper.format_student_name(student.student.first_name, student.student.last_name)
       end
 
       %{
@@ -92,6 +93,11 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
 
 
     socket = assign(socket, :charges, charges)
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_params(_params, _url, socket) do
     {:noreply, socket}
   end
 
