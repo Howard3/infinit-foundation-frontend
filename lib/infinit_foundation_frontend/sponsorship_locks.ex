@@ -12,6 +12,8 @@ defmodule InfinitFoundationFrontend.SponsorshipLocks do
     GenServer.start_link(__MODULE__, %{}, name: __MODULE__)
   end
 
+  # TODO: track abuse, potentially of a user trying to lock a student for a long time
+  # TODO: track metrics on locks, also sponsored to spot potential abuse patterns
   def request_lock(student_id, holder_id) do
     GenServer.call(__MODULE__, {:request_lock, student_id, holder_id})
   end
