@@ -58,6 +58,39 @@ const Hooks = {
         window.location.href = "/sponsorships/success?payment_intent_id=" + this.el.dataset.paymentIntentId;
       });
     }
+  },
+
+  CountdownTimer: {
+    mounted() {
+      const minutes = parseInt(this.el.dataset.minutes);
+      let totalSeconds = minutes * 60;
+      
+      this.timer = setInterval(() => {
+        totalSeconds--;
+        
+        if (totalSeconds <= 0) {
+          clearInterval(this.timer);
+          window.location.href = "/students";
+          return;
+        }
+
+        const minutesRemaining = Math.floor(totalSeconds / 60);
+        const secondsRemaining = totalSeconds % 60;
+        
+        this.el.textContent = `${minutesRemaining}:${secondsRemaining.toString().padStart(2, '0')}`;
+        
+        // Add warning colors when time is running low
+        if (totalSeconds < 60) {
+          this.el.classList.add('animate-pulse');
+        }
+      }, 1000);
+    },
+
+    destroyed() {
+      if (this.timer) {
+        clearInterval(this.timer);
+      }
+    }
   }
 }
 

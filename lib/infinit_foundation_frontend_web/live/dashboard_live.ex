@@ -84,8 +84,4 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
       _ -> "bg-gray-100 text-gray-800"
     end
   end
-
-  defp get_payment_history(user_id) do
-
-  end
 end

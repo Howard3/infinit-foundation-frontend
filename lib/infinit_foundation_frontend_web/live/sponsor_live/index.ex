@@ -16,15 +16,19 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
     {:ok, checkout_result} = prepare_checkout(student_id, user_id)
 
     # Verify the lock is still valid
-    case InfinitFoundationFrontend.SponsorshipLocks.extend_lock(student_id, socket.assigns.user_id) do
-      :ok ->
+    case InfinitFoundationFrontend.SponsorshipLocks.get_lock_info(student_id) do
+      {:ok, expiry_time} ->
+        dbg(expiry_time)
+        remaining_seconds = DateTime.diff(expiry_time, DateTime.utc_now())
+        remaining_minutes = div(remaining_seconds, 60)
+        |> dbg
+
         # Start the periodic lock extension
         Process.send_after(self(), :extend_lock, :timer.minutes(5))
 
         # Get student details
         student = ApiClient.get_student(student_id)
         sponsorship = Sponsorship.sponsorship_details()
-        socket = push_event(socket, "test-event", %{})
 
         {:ok,
          assign(socket,
@@ -33,10 +37,11 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
            page_title: "Complete Sponsorship",
            stripe_public_key: Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key],
            payment_intent_id: checkout_result.payment_intent_id,
-           client_secret: checkout_result.client_secret
+           client_secret: checkout_result.client_secret,
+           remaining_minutes: remaining_minutes
          )}
 
-      {:error, :not_lock_holder} ->
+      {:error, :not_found} ->
         {:ok,
          socket
          |> put_flash(:error, "Your sponsorship session has expired. Please try again.")

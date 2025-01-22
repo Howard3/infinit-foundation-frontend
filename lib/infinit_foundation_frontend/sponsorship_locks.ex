@@ -2,8 +2,9 @@ defmodule InfinitFoundationFrontend.SponsorshipLocks do
   use GenServer
   require Logger
 
-  @lock_timeout :timer.minutes(15)  # Locks expire after 15 minutes
   @table_name :sponsorship_locks
+  @lock_timeout 15
+  @lock_timeout_unit :minute
 
   # Client API
 
@@ -25,6 +26,10 @@ defmodule InfinitFoundationFrontend.SponsorshipLocks do
 
   def check_locks(student_ids, holder_id) when is_list(student_ids) do
     GenServer.call(__MODULE__, {:check_locks, student_ids, holder_id})
+  end
+
+  def get_lock_info(student_id) do
+    GenServer.call(__MODULE__, {:get_lock_info, student_id})
   end
 
   # Server callbacks
@@ -98,20 +103,26 @@ defmodule InfinitFoundationFrontend.SponsorshipLocks do
     {:reply, result, state}
   end
 
+  @impl true
+  def handle_call({:get_lock_info, student_id}, _from, state) do
+    case :ets.lookup(@table_name, student_id) do
+      [{^student_id, _holder_id, expiry}] ->
+        {:reply, {:ok, expiry}, state}
+      [] ->
+        {:reply, {:error, :not_found}, state}
+    end
+  end
+
   # Helper functions
 
   defp put_lock(student_id, holder_id) do
     Logger.info("Putting lock for student #{student_id} by holder #{holder_id}")
-    expiry = DateTime.add(DateTime.utc_now(), @lock_timeout, :second)
+    expiry = DateTime.add(DateTime.utc_now(), @lock_timeout, @lock_timeout_unit)
     remove_locks_for_holder(holder_id)
     :ets.insert(@table_name, {student_id, holder_id, expiry})
   end
 
   defp remove_locks_for_holder(holder_id) do
     :ets.match_delete(@table_name, {:_, holder_id, :_})
-  end
-
-  defp remove_expired_locks do
-    :ets.select_delete(@table_name, [{{:_, :"$1", :"$2"}, [{:==, :"$2", DateTime.utc_now()}], [true]}])
   end
 end

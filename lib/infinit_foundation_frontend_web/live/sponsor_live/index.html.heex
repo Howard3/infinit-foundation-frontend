@@ -7,6 +7,17 @@
       <p class="mt-2 text-sm text-gray-600">
         You're supporting {@student.first_name} {String.first(@student.last_name)}.'s education for the {@sponsorship.academic_years} school year
       </p>
+      <div class="mt-4 text-sm text-gray-600">
+        <span>Time remaining to complete sponsorship: </span>
+        <span
+          id="countdown-timer"
+          phx-hook="CountdownTimer"
+          data-minutes={@remaining_minutes}
+          class="font-medium text-red-600"
+        >
+          {@remaining_minutes}:00
+        </span>
+      </div>
     </div>
 
     <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
