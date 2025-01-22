@@ -54,14 +54,11 @@ defmodule InfinitFoundationFrontend.SponsorshipLocks do
         {:reply, :ok, state}
 
       [{_student_id, ^holder_id, expiry}] ->
-        if DateTime.compare(expiry, DateTime.utc_now()) == :lt do
-          # Lock expired, allow new lock
-          put_lock(student_id, holder_id)
-          {:reply, :ok, state}
-        else
-          # Lock still valid
-          {:reply, {:error, :already_locked}, state}
-        end
+        put_lock(student_id, holder_id)
+        {:reply, :ok, state}
+
+      _ ->
+        {:reply, {:error, :already_locked}, state}
     end
   end
 
