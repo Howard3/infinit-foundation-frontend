@@ -83,10 +83,20 @@ defmodule InfinitFoundationFrontend.SponsorshipLocks do
       case :ets.lookup(@table_name, student_id) do
         [] ->
           :free
-        [{_student_id, ^holder_id, _expiry}] ->
-          :reserved_for_user
-        [{_student_id, _other_holder, _expiry}] ->
-          :locked
+        [{_student_id, ^holder_id, expiry}] ->
+          if DateTime.compare(expiry, DateTime.utc_now()) == :gt do
+            :reserved_for_user
+          else
+            remove_lock(student_id)
+            :free
+          end
+        [{_student_id, _other_holder, expiry}] ->
+          if DateTime.compare(expiry, DateTime.utc_now()) == :gt do
+            :locked
+          else
+            remove_lock(student_id)
+            :free
+          end
       end
     end)
     {:reply, result, state}
@@ -125,5 +135,9 @@ defmodule InfinitFoundationFrontend.SponsorshipLocks do
 
   defp remove_locks_for_holder(holder_id) do
     :ets.match_delete(@table_name, {:_, holder_id, :_})
+  end
+
+  defp remove_lock(student_id) do
+    :ets.delete(@table_name, student_id)
   end
 end
