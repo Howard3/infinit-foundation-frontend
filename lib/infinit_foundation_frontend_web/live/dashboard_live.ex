@@ -22,7 +22,8 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
                 image_url: ApiClient.photo_url(student.profile_photo_url)
               },
               formatted_amount: "$30/month", # TODO: Get from config
-              start_date: Calendar.strftime(sponsorship.start_date, "%b %Y")
+              start_date: Calendar.strftime(sponsorship.start_date, "%b %Y"),
+              end_date: Calendar.strftime(sponsorship.end_date, "%b %Y")
             }
           end)
 
