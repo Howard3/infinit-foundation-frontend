@@ -13,6 +13,11 @@ const loadScript = (src) => {
 };
 
 const Hooks = {
+  Payments: {
+    async mounted() {
+        await this.pushEvent("load_payments", {});
+    }
+  },
   StripeForm: {
     async mounted() {
       // Load Stripe.js dynamically

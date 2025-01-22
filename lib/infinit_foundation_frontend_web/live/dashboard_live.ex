@@ -5,6 +5,7 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
 
   def mount(_params, session, socket) do
     socket = assign(socket, :user_id, session["user_id"])
+    socket = assign(socket, charges: [])
 
     case ApiClient.list_sponsored_students(session["user_id"]) do
       {:ok, sponsorships} ->
@@ -16,6 +17,7 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
             student = ApiClient.get_student(sponsorship.student_id)
             %{
               student: %{
+                id: student.id |> to_string,
                 name: "#{student.first_name} #{student.last_name}",
                 grade: student.grade,
                 location: get_location(student),
@@ -60,6 +62,39 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
     end
   end
 
+  @impl true
+  def handle_event("load_payments", _params, socket) do
+    {:ok, results} = Stripe.Charge.search(%{
+      query: "metadata[\"sponsor_id\"]:\"#{socket.assigns.user_id}\" AND status:\"succeeded\""
+    })
+
+    charges = results.data
+    |> Enum.map(fn charge ->
+      dbg(socket.assigns.active_sponsorships)
+      student_id = charge.metadata["student_id"]
+      student = socket.assigns.active_sponsorships |> Enum.find(fn student -> student.student.id == student_id end)
+      student_name = case student do
+        nil -> "Unknown Student"
+        _ -> student.student.name
+      end
+
+      %{
+        date: charge.created,
+        amount: charge.amount / 100,
+        status: charge.status,
+        formatted_amount: "$#{charge.amount / 100}",
+        formatted_date: charge.created |> DateTime.from_unix!() |> DateTime.to_date() |> Date.to_string(),
+        student_id: student_id,
+        student_name: student_name
+      }
+    end)
+
+
+
+    socket = assign(socket, :charges, charges)
+    {:noreply, socket}
+  end
+
   defp get_location(%Student{school_id: school_id}) do
     case ApiClient.list_schools([school_id]) do
       [school | _] -> school.city
@@ -74,14 +109,5 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
         |> div(30) # Approximate months
       acc + months_between
     end)
-  end
-
-  defp payment_status_colors(status) do
-    case status do
-      "succeeded" -> "bg-green-100 text-green-800"
-      "processing" -> "bg-yellow-100 text-yellow-800"
-      "failed" -> "bg-red-100 text-red-800"
-      _ -> "bg-gray-100 text-gray-800"
-    end
   end
 end

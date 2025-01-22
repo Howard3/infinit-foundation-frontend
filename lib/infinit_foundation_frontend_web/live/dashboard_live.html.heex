@@ -110,7 +110,7 @@
       </div>
       
 <!-- Payment History -->
-      <div>
+      <div id="payment-history" data-user-id={@user_id} phx-hook="Payments">
         <h2 class="text-lg font-semibold text-gray-900 mb-6">Payment History</h2>
         <div class="bg-white shadow rounded-lg overflow-hidden">
           <table class="min-w-full divide-y divide-gray-200">
@@ -131,20 +131,20 @@
               </tr>
             </thead>
             <tbody class="bg-white divide-y divide-gray-200">
-              <%= for payment <- @payment_history do %>
-                <tr>
+              <%= for {charge, index} <- Enum.with_index(@charges) do %>
+                <tr class={if rem(index, 2) == 0, do: "bg-white", else: "bg-gray-50"}>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payment.date}
+                    {charge.formatted_date}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payment.student_name}
+                    Sponsor {charge.student_name}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                    {payment.formatted_amount}
+                    {charge.formatted_amount}
                   </td>
                   <td class="px-6 py-4 whitespace-nowrap">
-                    <span class={"inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium #{payment_status_colors(payment.status)}"}>
-                      {payment.status}
+                    <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium">
+                      {charge.status}
                     </span>
                   </td>
                 </tr>
