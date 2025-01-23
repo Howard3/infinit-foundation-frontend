@@ -69,21 +69,21 @@ config :phoenix, :json_library, Jason
 import_config "#{config_env()}.exs"
 
 config :infinit_foundation_frontend, :feeding_backend,
-    base_url: System.get_env("FEEDING_BACKEND_URL", "http://localhost:3000/api"),
-    api_key: System.get_env("FEEDING_BACKEND_API_KEY")
+    base_url: System.get_env("FEEDING_BACKEND_URL") || raise("FEEDING_BACKEND_URL is not set"),
+    api_key: System.get_env("FEEDING_BACKEND_API_KEY") || raise("FEEDING_BACKEND_API_KEY is not set")
 
 config :infinit_foundation_frontend, InfinitFoundationFrontend.Guardian,
-  issuer: System.get_env("CLERK_FRONTEND_API"),
+  issuer: System.get_env("CLERK_FRONTEND_API") || raise("CLERK_FRONTEND_API is not set"),
   allowed_algos: ["RS256"],
   verify_issuer: true,
   secret_fetcher: InfinitFoundationFrontend.Guardian.SecretFetcher
 
 config :infinit_foundation_frontend, :clerk,
-  frontend_api: System.get_env("CLERK_FRONTEND_API"),
-  publishable_key: System.get_env("CLERK_PUBLISHABLE_KEY")
+  frontend_api: System.get_env("CLERK_FRONTEND_API") || raise("CLERK_FRONTEND_API is not set"),
+  publishable_key: System.get_env("CLERK_PUBLISHABLE_KEY") || raise("CLERK_PUBLISHABLE_KEY is not set")
 
-config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET_KEY")
+config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET_KEY") || raise("STRIPE_SECRET_KEY is not set")
 
 config :infinit_foundation_frontend, :stripe,
-  public_key: System.get_env("STRIPE_PUBLIC_KEY"),
-  secret_key: System.get_env("STRIPE_SECRET_KEY")
+  public_key: System.get_env("STRIPE_PUBLIC_KEY") || raise("STRIPE_PUBLIC_KEY is not set"),
+  secret_key: System.get_env("STRIPE_SECRET_KEY") || raise("STRIPE_SECRET_KEY is not set")

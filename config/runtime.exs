@@ -22,10 +22,6 @@ end
 
 if config_env() == :prod do
   # The secret key base is used to sign/encrypt cookies and other secrets.
-  # A default value is used in config/dev.exs and config/test.exs but you
-  # want to use a different value for prod and you most likely don't want
-  # to check this value into version control, so we use an environment
-  # variable instead.
   secret_key_base =
     System.get_env("SECRET_KEY_BASE") ||
       raise """
@@ -33,7 +29,14 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-  host = System.get_env("PHX_HOST") || "example.com"
+  signing_salt =
+    System.get_env("SESSION_SIGNING_SALT") ||
+      raise """
+      environment variable SESSION_SIGNING_SALT is missing.
+      You can generate one by calling: mix phx.gen.secret
+      """
+
+  host = System.get_env("PHX_HOST") || raise("PHX_HOST is not set")
   port = String.to_integer(System.get_env("PORT") || "4000")
 
   config :infinit_foundation_frontend, :dns_cluster_query, System.get_env("DNS_CLUSTER_QUERY")
@@ -48,7 +51,13 @@ if config_env() == :prod do
       ip: {0, 0, 0, 0, 0, 0, 0, 0},
       port: port
     ],
-    secret_key_base: secret_key_base
+    secret_key_base: secret_key_base,
+    session_options: [
+      store: :cookie,
+      key: "_infinit_foundation_key",
+      signing_salt: signing_salt,
+      same_site: "Lax"
+    ]
 
   # ## SSL Support
   #
