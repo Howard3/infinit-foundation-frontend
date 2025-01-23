@@ -9,7 +9,7 @@ defmodule InfinitFoundationFrontend.Guardian.SecretFetcher do
   end
 
   @impl Guardian.Token.Jwt.SecretFetcher
-  def fetch_verifying_secret(_mod, claims, _opts) do
+  def fetch_verifying_secret(_mod, _claims, _opts) do
     case get_clerk_public_key() do
       {:ok, public_key} -> {:ok, public_key}
       _ -> {:error, :secret_not_found}

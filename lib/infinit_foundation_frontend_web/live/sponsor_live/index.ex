@@ -6,12 +6,11 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
   require Logger
 
   @impl true
-  def mount(%{"id" => student_id} = params, session, socket) do
+  def mount(%{"id" => student_id}, session, socket) do
     user_id = session["user_id"]
     socket = assign(socket, :user_id, user_id)
     socket = assign(socket, :stripe_public_key, Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key])
     socket = assign(socket, :setup_intent, nil)
-    parent = self()
 
     {:ok, checkout_result} = prepare_checkout(student_id, user_id)
 

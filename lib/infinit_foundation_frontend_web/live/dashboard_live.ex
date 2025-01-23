@@ -1,9 +1,10 @@
 defmodule InfinitFoundationFrontendWeb.DashboardLive do
   use InfinitFoundationFrontendWeb, :live_view
   alias InfinitFoundationFrontend.ApiClient
-  alias InfinitFoundationFrontend.Schemas.{Student, Sponsorship}
+  alias InfinitFoundationFrontend.Schemas.Student
   alias InfinitFoundationFrontendWeb.ViewHelper
 
+  @impl true
   def mount(_params, session, socket) do
     socket = assign(socket, :user_id, session["user_id"])
     socket = assign(socket, charges: [])
