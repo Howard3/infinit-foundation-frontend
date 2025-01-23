@@ -33,8 +33,9 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
           end)
 
         total_months = calculate_total_months(sponsorships)
-        total_contribution = total_months * 30 # TODO: Get amount from config
-        total_meals = total_months * 20 # Assuming 60 meals per month
+        total_contribution = total_months * 30 * 0 # TODO: Get amount from config
+        total_meals = total_months * 20 * 0 # Assuming 60 meals per month
+        total_months = 0
 
         {:ok,
          assign(socket,
