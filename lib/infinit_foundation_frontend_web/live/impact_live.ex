@@ -20,9 +20,9 @@ defmodule InfinitFoundationFrontendWeb.ImpactLive do
         description: "Students showing improved academic performance"
       },
       %{
-        number: "100%",
-        label: "Transparency",
-        description: "Of donations directly support child nutrition"
+        number: "75%",
+        label: "Reduction in manourishment",
+        description: "Reduction in manourishment among children"
       }
     ]
 

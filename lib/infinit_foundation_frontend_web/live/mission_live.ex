@@ -24,7 +24,7 @@ defmodule InfinitFoundationFrontendWeb.MissionLive do
       %{
         icon: "hero-eye-solid",
         title: "Transparency",
-        description: "We maintain complete transparency in our operations, ensuring every peso is tracked and every meal is documented."
+        description: "We maintain complete transparency in our operations, ensuring every donation is tracked and every meal is documented."
       },
       %{
         icon: "hero-users-solid",
@@ -35,52 +35,25 @@ defmodule InfinitFoundationFrontendWeb.MissionLive do
 
     milestones = [
       %{
-        year: "2021",
-        title: "Foundation Established",
-        description: "Started with a pilot program in Manila, feeding 50 children daily."
-      },
-      %{
-        year: "2022",
-        title: "Program Expansion",
-        description: "Expanded to 5 schools and implemented our digital tracking system."
-      },
-      %{
         year: "2023",
-        title: "Technology Integration",
-        description: "Launched our sponsor portal and real-time monitoring system."
+        title: "Feeding Program Established",
+        description: "Started with a pilot program, feeding 25 children daily."
       },
       %{
         year: "2024",
-        title: "National Growth",
-        description: "Currently operating in multiple regions, serving thousands of meals daily."
-      }
-    ]
-
-    team_members = [
-      %{
-        name: "Richard Eldridge",
-        role: "Chief Executive Officer",
-        bio: "Tech entrepreneur and philanthropist with a passion for solving childhood hunger through sustainable programs.",
-        image: @placeholder_avatars.ceo
+        title: "Program Expansion",
+        description: "Expanded to 250 children and implemented our digital tracking system."
       },
       %{
-        name: "Jane Placeholder",
-        role: "Chief Operations Officer",
-        bio: "Operations and logistics expert with extensive experience in non-profit management.",
-        image: @placeholder_avatars.coo
+        year: "2025",
+        title: "Technology Integration",
+        description: "Launched our sponsor portal and real-time monitoring system."
       },
-      %{
-        name: "John Doesmith",
-        role: "Program Director",
-        bio: "Former NGO director specializing in education and nutrition programs.",
-        image: @placeholder_avatars.director
-      }
     ]
 
     {:ok, assign(socket,
       values: values,
       milestones: milestones,
-      team_members: team_members
     )}
   end
 end

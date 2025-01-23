@@ -12,7 +12,7 @@ defmodule InfinitFoundationFrontendWeb.HowItWorksLive do
       %{
         icon: "hero-currency-dollar-solid",
         title: "Make a Commitment",
-        description: "Sponsor a child for $250 per year. This covers their daily meals, ensuring they have the nutrition they need to focus on their education."
+        description: "Sponsor a child for $250 per year. This covers their daily meals and vitamin supplements, ensuring they have the nutrition they need to focus on their education."
       },
       %{
         icon: "hero-academic-cap-solid",

@@ -7,7 +7,7 @@ defmodule InfinitFoundationFrontendWeb.Endpoint do
   @session_options [
     store: :cookie,
     key: "_infinit_foundation_key",
-    signing_salt: System.get_env("SESSION_SIGNING_SALT"),  # We'll make this configurable later
+    signing_salt: "temporary_dev_signing_salt",
     same_site: "Lax"
   ]
 

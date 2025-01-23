@@ -1,5 +1,4 @@
 <div class="bg-white">
-  
   <div class="relative isolate overflow-hidden bg-gradient-to-br from-gray-900 via-red-900 to-gray-900 py-24 sm:py-32">
     <div class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,theme(colors.red.900/20),transparent)]">
     </div>
@@ -36,96 +35,6 @@
           </div>
         <% end %>
       </dl>
-    </div>
-  </div>
-
-  <div class="bg-gray-50 py-24 sm:py-32">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl lg:text-center">
-        <h2 class="text-base font-semibold leading-7 text-red-600">Success Stories</h2>
-        <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          Lives Changed Through Nutrition
-        </p>
-      </div>
-
-      <div class="mx-auto mt-16 max-w-2xl sm:mt-20 lg:mt-24 lg:max-w-none">
-        <div class="grid max-w-xl grid-cols-1 gap-x-8 gap-y-16 lg:max-w-none lg:grid-cols-2">
-          <%= for story <- @success_stories do %>
-            <div class="flex flex-col rounded-2xl bg-white shadow-lg">
-              <div class="relative flex-1 px-6 pt-16 pb-8 md:px-8">
-                <div class="absolute top-0 inline-block -translate-y-1/2 transform rounded-xl bg-red-600 p-5 shadow-lg">
-                  <div class="h-6 w-6 text-white">
-                    <.icon name="hero-academic-cap-solid" class="h-6 w-6" />
-                  </div>
-                </div>
-                <h3 class="text-xl font-semibold leading-7 text-gray-900">{story.name}</h3>
-                <p class="mt-2 text-sm leading-6 text-gray-500">{story.location}</p>
-                <p class="mt-6 text-base leading-7 text-gray-600">{story.story}</p>
-              </div>
-              <div class="mt-4 p-6 bg-gray-50 rounded-b-2xl md:px-8">
-                <ul role="list" class="divide-y divide-gray-200">
-                  <%= for stat <- story.stats do %>
-                    <li class="flex items-center justify-between py-4">
-                      <div class="flex flex-col">
-                        <p class="text-sm font-medium text-gray-900">{stat.label}</p>
-                        <div class="flex items-center gap-2">
-                          <p class="text-sm text-gray-500">Before: {stat.before}</p>
-                          <.icon name="hero-arrow-right-solid" class="h-4 w-4 text-red-500" />
-                          <p class="text-sm font-medium text-red-600">After: {stat.after}</p>
-                        </div>
-                      </div>
-                    </li>
-                  <% end %>
-                </ul>
-              </div>
-            </div>
-          <% end %>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="py-24 sm:py-32">
-    <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <div class="mx-auto max-w-2xl lg:text-center">
-        <h2 class="text-base font-semibold leading-7 text-red-600">Program Growth</h2>
-        <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-          Expanding Our Reach
-        </p>
-      </div>
-
-      <div class="mt-16 flow-root">
-        <div class="overflow-x-auto">
-          <div class="inline-block min-w-full align-middle">
-            <table class="min-w-full divide-y divide-gray-300">
-              <thead>
-                <tr class="bg-gray-100">
-                  <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">Year</th>
-                  <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    Students Supported
-                  </th>
-                  <th class="px-6 py-3 text-left text-sm font-semibold text-gray-900">
-                    Partner Schools
-                  </th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-gray-200">
-                <%= for data <- @annual_growth do %>
-                  <tr>
-                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">{data.year}</td>
-                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                      {data.students}
-                    </td>
-                    <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-900">
-                      {data.schools}
-                    </td>
-                  </tr>
-                <% end %>
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
     </div>
   </div>
 
