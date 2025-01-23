@@ -78,6 +78,20 @@ defmodule InfinitFoundationFrontend.MixProject do
         "tailwind infinit_foundation_frontend --minify",
         "esbuild infinit_foundation_frontend --minify",
         "phx.digest"
+      ],
+      "fly.staging": [
+        "cmd fly deploy --config fly.staging.toml --remote-only"
+      ],
+      "fly.production": [
+        "cmd fly deploy --config fly.production.toml --remote-only"
+      ],
+      "fly.staging.monitor": [
+        "cmd fly deploy --config fly.staging.toml --remote-only",
+        "cmd fly status --config fly.staging.toml"
+      ],
+      "fly.production.monitor": [
+        "cmd fly deploy --config fly.production.toml --remote-only",
+        "cmd fly status --config fly.production.toml"
       ]
     ]
   end
