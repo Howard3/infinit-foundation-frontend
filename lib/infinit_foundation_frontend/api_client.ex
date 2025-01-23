@@ -8,8 +8,7 @@ defmodule InfinitFoundationFrontend.ApiClient do
     Sponsorship
   }
 
-  @base_url Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :base_url])
-  @api_key Application.compile_env(:infinit_foundation_frontend, [:feeding_backend, :api_key])
+
   @page_size 18
 
   @spec list_locations() :: [Location.t()]
@@ -59,16 +58,19 @@ defmodule InfinitFoundationFrontend.ApiClient do
       "/student/profile/photo/" <> _rest ->
         relative_path
       _ -> # FIXME: this is a little hacky, but it works for now
-        String.replace(@base_url, "/api", "/student/profile/photo") <> relative_path
+        photo_base_url() <> relative_path
     end
   end
 
-  defp url(path), do: @base_url <> path
+  defp api_key, do: Application.get_env(:infinit_foundation_frontend, :feeding_backend)[:api_key]
+  defp base_url, do: Application.get_env(:infinit_foundation_frontend, :feeding_backend)[:base_url]
+  defp photo_base_url, do: base_url() |> String.replace("/api", "/student/profile/photo")
+  defp url(path), do: base_url() <> path
 
   defp default_headers do
     [
       {"accept", "application/json"},
-      {"X-API-Key", @api_key}
+      {"X-API-Key", api_key()}
     ]
   end
 

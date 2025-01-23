@@ -67,23 +67,3 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
-
-config :infinit_foundation_frontend, :feeding_backend,
-    base_url: System.get_env("FEEDING_BACKEND_URL") || raise("FEEDING_BACKEND_URL is not set"),
-    api_key: System.get_env("FEEDING_BACKEND_API_KEY") || raise("FEEDING_BACKEND_API_KEY is not set")
-
-config :infinit_foundation_frontend, InfinitFoundationFrontend.Guardian,
-  issuer: System.get_env("CLERK_FRONTEND_API") || raise("CLERK_FRONTEND_API is not set"),
-  allowed_algos: ["RS256"],
-  verify_issuer: true,
-  secret_fetcher: InfinitFoundationFrontend.Guardian.SecretFetcher
-
-config :infinit_foundation_frontend, :clerk,
-  frontend_api: System.get_env("CLERK_FRONTEND_API") || raise("CLERK_FRONTEND_API is not set"),
-  publishable_key: System.get_env("CLERK_PUBLISHABLE_KEY") || raise("CLERK_PUBLISHABLE_KEY is not set")
-
-config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET_KEY") || raise("STRIPE_SECRET_KEY is not set")
-
-config :infinit_foundation_frontend, :stripe,
-  public_key: System.get_env("STRIPE_PUBLIC_KEY") || raise("STRIPE_PUBLIC_KEY is not set"),
-  secret_key: System.get_env("STRIPE_SECRET_KEY") || raise("STRIPE_SECRET_KEY is not set")
