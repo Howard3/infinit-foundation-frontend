@@ -86,7 +86,10 @@
               await Clerk.mountUserButton(userControlContent, {afterSignOutUrl: "/sign-out"});
             }
 
-            posthog.identify(Clerk.user.id);
+            posthog.identify(Clerk.user.id, {
+              email: Clerk.user.primaryEmailAddress.emailAddress,
+              name: Clerk.user.fullName
+            });
 
             userControl.classList.remove('hidden');
           });
