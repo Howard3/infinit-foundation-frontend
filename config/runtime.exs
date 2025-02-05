@@ -133,3 +133,7 @@ config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET_KEY") || raise("
 config :infinit_foundation_frontend, :stripe,
   public_key: System.get_env("STRIPE_PUBLIC_KEY") || raise("STRIPE_PUBLIC_KEY is not set"),
   secret_key: System.get_env("STRIPE_SECRET_KEY") || raise("STRIPE_SECRET_KEY is not set")
+
+config :posthog,
+  api_url: "https://us.i.posthog.com",
+  api_key: System.get_env("POSTHOG_API_KEY") || raise("POSTHOG_API_KEY is not set")

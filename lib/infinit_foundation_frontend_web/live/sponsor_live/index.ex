@@ -2,12 +2,19 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
   use InfinitFoundationFrontendWeb, :live_view
   alias InfinitFoundationFrontend.ApiClient
   alias InfinitFoundationFrontend.Config.Sponsorship
+  alias InfinitFoundationFrontend.Posthog
 
   require Logger
 
   @impl true
   def mount(%{"id" => student_id}, session, socket) do
     user_id = session["user_id"]
+    Posthog.capture("Started Sponsorship Process",
+      user_id: user_id,
+      properties: %{
+        student_id: student_id
+      }
+    )
     socket = assign(socket, :user_id, user_id)
     socket = assign(socket, :stripe_public_key, Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key])
     socket = assign(socket, :setup_intent, nil)
@@ -58,6 +65,12 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
   end
 
   defp prepare_checkout(student_id, user_id) do
+    Posthog.capture("Started Sponsorship Checkout",
+      user_id: user_id,
+      properties: %{
+        student_id: student_id
+      }
+    )
     Logger.info("Preparing checkout for student #{student_id} with user #{user_id}")
     {:ok, payment_intent} = Stripe.PaymentIntent.create(%{
       amount: Sponsorship.amount_in_cents(),

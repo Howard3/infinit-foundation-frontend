@@ -4,9 +4,17 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
   alias InfinitFoundationFrontend.Schemas.Student
   alias InfinitFoundationFrontendWeb.ViewHelper
   alias InfinitFoundationFrontend.Schemas.SponsorEvent
+  alias InfinitFoundationFrontend.Posthog
 
   @impl true
   def mount(_params, session, socket) do
+    user_id = session["user_id"]
+    Posthog.capture("Viewed Dashboard",
+      user_id: user_id,
+      properties: %{
+        timestamp: DateTime.utc_now()
+      }
+    )
     socket = assign(socket, :user_id, session["user_id"])
     socket = assign(socket, charges: [])
 
@@ -78,6 +86,9 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
 
   @impl true
   def handle_event("load_payments", _params, socket = %{assigns: %{user_id: user_id, active_sponsorships: active_sponsorships}}) do
+    Posthog.capture("Viewed Payment History",
+      user_id: user_id
+    )
     {:ok, results} = Stripe.Charge.search(%{
       query: "metadata[\"sponsor_id\"]:\"#{user_id}\" AND status:\"succeeded\""
     })

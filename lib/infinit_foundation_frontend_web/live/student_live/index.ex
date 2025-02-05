@@ -4,6 +4,7 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   alias InfinitFoundationFrontend.Schemas.{Location, StudentFilter}
   alias InfinitFoundationFrontend.Config.Sponsorship
   alias InfinitFoundationFrontendWeb.ViewHelper
+  alias InfinitFoundationFrontend.Posthog
 
   @impl true
   def mount(_params, session, socket) do
@@ -37,6 +38,12 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
   @impl true
   def handle_event("change_page", %{"page" => page}, socket) do
+    Posthog.capture("Changed Page",
+      user_id: socket.assigns.user_id,
+      properties: %{
+        page: page
+      }
+    )
     page = String.to_integer(page)
 
     filter = %StudentFilter{
@@ -60,6 +67,13 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
   @impl true
   def handle_event("filter_age", params, socket) do
+    Posthog.capture("Applied Age Filter",
+      user_id: socket.assigns.user_id,
+      properties: %{
+        min_age: params["min_age"],
+        max_age: params["max_age"]
+      }
+    )
     min_age = parse_age(params["min_age"])
     max_age = parse_age(params["max_age"])
 
@@ -90,6 +104,9 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
   @impl true
   def handle_event("filter_location", %{"location" => ""}, socket) do
+    Posthog.capture("Cleared Location Filter",
+      user_id: socket.assigns.user_id
+    )
     filter = %StudentFilter{
       page: 1,
       min_age: socket.assigns.selected_min_age,
@@ -107,6 +124,12 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
   end
 
   def handle_event("filter_location", %{"location" => location}, socket) do
+    Posthog.capture("Applied Location Filter",
+      user_id: socket.assigns.user_id,
+      properties: %{
+        location: location
+      }
+    )
     [country, city] = String.split(location, " - ")
 
     filter = %StudentFilter{
@@ -129,6 +152,12 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
 
   @impl true
   def handle_event("request_sponsorship", %{"id" => id}, socket) do
+    Posthog.capture("Requested Sponsorship",
+      user_id: socket.assigns.user_id,
+      properties: %{
+        student_id: id
+      }
+    )
     case socket.assigns.user_id do
       nil ->
         {:noreply,
@@ -174,7 +203,6 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
     # Get lock status for all students
     student_ids = Enum.map(students, & &1.id)
     lock_statuses = InfinitFoundationFrontend.SponsorshipLocks.check_locks(student_ids, user_id)
-    dbg(lock_statuses)
 
     Enum.zip_with([students, lock_statuses], fn [student, lock_status] ->
       school = Map.get(schools_by_id, student.school_id, %{})

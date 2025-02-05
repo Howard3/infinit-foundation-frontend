@@ -59,7 +59,8 @@ defmodule InfinitFoundationFrontend.MixProject do
       {:req, "~> 0.5.0"},
       {:guardian, "~> 2.3"},
       {:jose, "~> 1.11"},
-      {:stripity_stripe, "~> 3.0"}
+      {:stripity_stripe, "~> 3.0"},
+      {:posthog, "~> 0.1"}
     ]
   end
 
