@@ -89,4 +89,16 @@ defmodule InfinitFoundationFrontend.Schemas do
 
     defstruct [:student_id, :start_date, :end_date]
   end
+
+  defmodule SponsorEvent do
+    @type t :: %__MODULE__{
+      student_id: String.t(),
+      student_name: String.t(),
+      feeding_time: NaiveDateTime.t(),
+      school_id: String.t(),
+      event_type: String.t()
+    }
+
+    defstruct [:student_id, :student_name, :feeding_time, :school_id, :event_type]
+  end
 end

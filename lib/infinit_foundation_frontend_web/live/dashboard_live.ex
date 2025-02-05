@@ -3,6 +3,7 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
   alias InfinitFoundationFrontend.ApiClient
   alias InfinitFoundationFrontend.Schemas.Student
   alias InfinitFoundationFrontendWeb.ViewHelper
+  alias InfinitFoundationFrontend.Schemas.SponsorEvent
 
   @impl true
   def mount(_params, session, socket) do
@@ -41,6 +42,12 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
           {:error, _} -> 0
         end
 
+        # Get recent events
+        recent_events = case ApiClient.list_sponsor_events(session["user_id"], limit: 10) do
+          {:ok, %{events: events}} -> events
+          {:error, _} -> []
+        end
+
         {:ok,
          assign(socket,
            active_sponsorships: sponsored_students,
@@ -49,6 +56,7 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
              %{label: "Students Supported", value: length(sponsored_students)},
              %{label: "Months of Support", value: total_months},
            ],
+           recent_events: recent_events,
            payment_history: [], # TODO: Implement payment history
            student_updates: [] # TODO: Implement student updates
          )}
@@ -62,6 +70,7 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
              %{label: "Students Supported", value: "0"},
              %{label: "Months of Support", value: "0"},
            ],
+           recent_events: [],
            payment_history: [],
            student_updates: []
          )}
@@ -93,8 +102,6 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
         student_name: student_name
       }
     end)
-
-
 
     socket = assign(socket, :charges, charges)
     {:noreply, socket}

@@ -164,9 +164,12 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
     school_ids = students
                 |> Enum.map(& &1.school_id)
                 |> Enum.uniq()
+                |> Enum.filter(& &1 != "")
 
-    schools = ApiClient.list_schools(school_ids)
-    schools_by_id = Map.new(schools, fn school -> {school.id, school} end)
+    schools_by_id = case ApiClient.list_schools(school_ids) do
+      [] -> %{}
+      schools -> Map.new(schools, fn school -> {school.id, school} end)
+    end
 
     # Get lock status for all students
     student_ids = Enum.map(students, & &1.id)
@@ -174,15 +177,15 @@ defmodule InfinitFoundationFrontendWeb.StudentLive.Index do
     dbg(lock_statuses)
 
     Enum.zip_with([students, lock_statuses], fn [student, lock_status] ->
-      school = Map.get(schools_by_id, student.school_id)
+      school = Map.get(schools_by_id, student.school_id, %{})
 
       %{
         id: student.id,
         name: ViewHelper.format_student_name(student.first_name, student.last_name),
         age: calculate_age(student.date_of_birth),
         grade: student.grade,
-        school: school.name,
-        location: "#{school.city}, #{school.country}",
+        school: Map.get(school, :name, ""),
+        location: "#{Map.get(school, :city, "")}, #{Map.get(school, :country, "")}",
         story: "",
         sponsored: false,
         lock_status: lock_status,

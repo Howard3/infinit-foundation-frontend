@@ -5,7 +5,8 @@ defmodule InfinitFoundationFrontend.ApiClient do
     PaginatedStudents,
     School,
     StudentFilter,
-    Sponsorship
+    Sponsorship,
+    SponsorEvent
   }
 
 
@@ -164,6 +165,37 @@ defmodule InfinitFoundationFrontend.ApiClient do
     case Req.get!(url("/sponsors/#{sponsor_id}/impact"), headers: default_headers()) do
       %{status: 200, body: %{"totalMealCount" => total_meal_count}} ->
         {:ok, %{total_meal_count: total_meal_count}}
+
+      response ->
+        {:error, response}
+    end
+  end
+
+  @doc """
+  Gets the recent events for a sponsor.
+  Returns {:ok, %{events: [SponsorEvent.t()], total: integer}} on success or {:error, any} on failure.
+  """
+  @spec list_sponsor_events(String.t(), keyword()) :: {:ok, %{events: [SponsorEvent.t()], total: integer}} | {:error, any()}
+  def list_sponsor_events(sponsor_id, opts \\ []) do
+    page = Keyword.get(opts, :page, 1)
+    limit = Keyword.get(opts, :limit, 10)
+
+    case Req.get!(url("/sponsors/#{sponsor_id}/events"),
+         headers: default_headers(),
+         params: %{page: page, limit: limit}) do
+      %{status: 200, body: %{"events" => events, "total" => total}} ->
+        {:ok, %{
+          events: Enum.map(events, fn event ->
+            %SponsorEvent{
+              student_id: event["studentId"],
+              student_name: event["studentName"],
+              feeding_time: NaiveDateTime.from_iso8601!(event["feedingTime"]),
+              school_id: event["schoolId"],
+              event_type: event["eventType"]
+            }
+          end),
+          total: total
+        }}
 
       response ->
         {:error, response}
