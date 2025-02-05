@@ -138,7 +138,7 @@
     </div>
   </div>
 </header>
-<main>
+<main phx-hook="PostHogGlobal" id="posthog-hook">
   <.flash_group flash={@flash} />
   {@inner_content}
 </main>

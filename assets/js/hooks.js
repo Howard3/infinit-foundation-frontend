@@ -13,6 +13,14 @@ const loadScript = (src) => {
 };
 
 const Hooks = {
+  PostHogGlobal: {
+    mounted() {
+      posthog.capture("$pageview");
+    },
+    destroyed() {
+      posthog.capture("$pageleave");
+    }
+  },
   Payments: {
     async mounted() {
         await this.pushEvent("load_payments", {});
