@@ -34,7 +34,6 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
           end)
 
         total_months = calculate_total_months(sponsorships)
-        total_contribution = total_months * 30 * 0 # TODO: Get amount from config
 
         # Get actual meal count from API
         total_meals = case ApiClient.get_sponsor_impact(session["user_id"]) do
@@ -78,15 +77,15 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
   end
 
   @impl true
-  def handle_event("load_payments", _params, socket) do
+  def handle_event("load_payments", _params, socket = %{assigns: %{user_id: user_id, active_sponsorships: active_sponsorships}}) do
     {:ok, results} = Stripe.Charge.search(%{
-      query: "metadata[\"sponsor_id\"]:\"#{socket.assigns.user_id}\" AND status:\"succeeded\""
+      query: "metadata[\"sponsor_id\"]:\"#{user_id}\" AND status:\"succeeded\""
     })
 
     charges = results.data
     |> Enum.map(fn charge ->
       student_id = charge.metadata["student_id"]
-      student = socket.assigns.active_sponsorships |> Enum.find(fn student -> student.student.id == student_id end)
+      student = active_sponsorships |> Enum.find(fn student -> student.student.id == student_id end)
       student_name = case student do
         nil -> "Unknown Student"
         _ -> ViewHelper.format_student_name(student.student.first_name, student.student.last_name)
