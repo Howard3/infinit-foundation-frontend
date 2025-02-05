@@ -92,6 +92,12 @@ defmodule InfinitFoundationFrontend.MixProject do
       "fly.production.monitor": [
         "cmd fly deploy --config fly.production.toml --remote-only",
         "cmd fly status --config fly.production.toml"
+      ],
+      "fly.staging.console": [
+        "cmd fly ssh console --config fly.staging.toml --command '/bin/bash -c \"/app/bin/infinit_foundation_frontend remote\"'"
+      ],
+      "fly.production.console": [
+        "cmd fly ssh console --config fly.production.toml --command '/bin/bash -c \"/app/bin/infinit_foundation_frontend remote\"'"
       ]
     ]
   end

@@ -53,7 +53,7 @@ defmodule InfinitFoundationFrontendWeb.MissionLive do
 
     {:ok, assign(socket,
       values: values,
-      milestones: milestones,
+      milestones: milestones
     )}
   end
 end

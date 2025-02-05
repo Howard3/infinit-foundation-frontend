@@ -12,9 +12,9 @@
 <!-- Impact Metrics -->
       <div>
         <h2 class="text-lg font-semibold text-gray-900 mb-6">Your Impact</h2>
-        <dl class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <dl class="grid grid-cols-1 gap-5 sm:grid-cols-1 lg:grid-cols-3">
           <%= for metric <- @impact_metrics do %>
-            <div class="relative overflow-hidden rounded-lg bg-white px-4 pb-12 pt-5 shadow sm:px-6 sm:pt-6">
+            <div class="relative overflow-hidden rounded-lg bg-white px-4 sm:pt-6 sm:pb-2 lg:pb-5 lg:pt-5 shadow sm:px-6">
               <dt>
                 <div class="absolute rounded-md bg-red-600 p-3">
                   <.icon name="hero-chart-bar-solid" class="h-6 w-6 text-white" />

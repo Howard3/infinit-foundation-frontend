@@ -29,6 +29,11 @@ defmodule InfinitFoundationFrontendWeb.Router do
 
     # Add this new route to handle image proxying
     get "/student/profile/photo/*path", ImageController, :proxy_photo
+
+    # Legal routes
+    get "/privacy-policy", LegalController, :privacy_policy
+    get "/terms-of-service", LegalController, :terms_of_service
+    get "/cookie-policy", LegalController, :cookie_policy
   end
 
   # Protected routes that require authentication

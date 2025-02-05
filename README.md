@@ -13,6 +13,20 @@ The application can be deployed to both staging and production environments on F
 
 ### Available Commands
 
+### First Time Setup
+
+Before using the console commands, you need to set up SSH access to your Fly.io applications:
+
+```bash
+# Set up SSH for Fly.io applications
+fly ssh issue --agent
+```
+
+This command only needs to be run once per machine. It will:
+- Create an SSH key pair for Fly.io
+- Register it with your Fly.io account
+- Configure your local SSH client
+
 ```bash
 # Deploy to staging
 mix fly.staging
@@ -25,6 +39,12 @@ mix fly.staging.monitor
 
 # Deploy to production and monitor deployment status
 mix fly.production.monitor
+
+# Connect to staging IEx console
+mix fly.staging.console
+
+# Connect to production IEx console
+mix fly.production.console
 ```
 
 ### Configuration Files
@@ -41,3 +61,18 @@ Ready to run in production? Please [check our deployment guides](https://hexdocs
   * Docs: https://hexdocs.pm/phoenix
   * Forum: https://elixirforum.com/c/phoenix-forum
   * Source: https://github.com/phoenixframework/phoenix
+
+When connected to the console, you'll get an interactive IEx session where you can:
+- Inspect application state
+- Execute code in the running application
+- Debug issues in real-time
+- Run database queries
+
+Example console usage:
+```elixir
+# Get application version
+iex> Application.spec(:infinit_foundation_frontend, :vsn)
+
+# Check configuration
+iex> Application.get_all_env(:infinit_foundation_frontend)
+```

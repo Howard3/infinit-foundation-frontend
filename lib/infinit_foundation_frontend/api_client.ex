@@ -86,6 +86,8 @@ defmodule InfinitFoundationFrontend.ApiClient do
     }
   end
 
+  def list_schools([]), do: []
+
   @spec list_schools([String.t()]) :: [School.t()]
   def list_schools(school_ids) when is_list(school_ids) do
     params = %{ids: Enum.join(school_ids, ",")}
@@ -111,10 +113,8 @@ defmodule InfinitFoundationFrontend.ApiClient do
   Creates a sponsorship record for a student.
   """
   def create_sponsorship(%{student_id: student_id, sponsor_id: sponsor_id} = _params) do
-    # Get the sponsorship end date from config
     end_date = InfinitFoundationFrontend.Config.Sponsorship.ending_timestamp()
-    # Use today as the start date
-    start_date = Date.utc_today() |> Date.to_string()
+    start_date = InfinitFoundationFrontend.Config.Sponsorship.starting_timestamp()
 
     body = %{
       sponsorId: sponsor_id,
@@ -149,6 +149,21 @@ defmodule InfinitFoundationFrontend.ApiClient do
              end_date: Date.from_iso8601!(sponsorship["endDate"])
            }
          end)}
+
+      response ->
+        {:error, response}
+    end
+  end
+
+  @doc """
+  Gets the impact statistics for a given sponsor.
+  Returns {:ok, %{total_meal_count: integer}} on success or {:error, any} on failure.
+  """
+  @spec get_sponsor_impact(String.t()) :: {:ok, %{total_meal_count: integer}} | {:error, any()}
+  def get_sponsor_impact(sponsor_id) do
+    case Req.get!(url("/sponsors/#{sponsor_id}/impact"), headers: default_headers()) do
+      %{status: 200, body: %{"totalMealCount" => total_meal_count}} ->
+        {:ok, %{total_meal_count: total_meal_count}}
 
       response ->
         {:error, response}

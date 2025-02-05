@@ -34,8 +34,12 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
 
         total_months = calculate_total_months(sponsorships)
         total_contribution = total_months * 30 * 0 # TODO: Get amount from config
-        total_meals = total_months * 20 * 0 # Assuming 60 meals per month
-        total_months = 0
+
+        # Get actual meal count from API
+        total_meals = case ApiClient.get_sponsor_impact(session["user_id"]) do
+          {:ok, %{total_meal_count: count}} -> count
+          {:error, _} -> 0
+        end
 
         {:ok,
          assign(socket,
@@ -44,7 +48,6 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
              %{label: "Total Meals Provided", value: total_meals},
              %{label: "Students Supported", value: length(sponsored_students)},
              %{label: "Months of Support", value: total_months},
-             %{label: "Total Contribution", value: "$#{total_contribution}"}
            ],
            payment_history: [], # TODO: Implement payment history
            student_updates: [] # TODO: Implement student updates
@@ -58,7 +61,6 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
              %{label: "Total Meals Provided", value: "0"},
              %{label: "Students Supported", value: "0"},
              %{label: "Months of Support", value: "0"},
-             %{label: "Total Contribution", value: "$0"}
            ],
            payment_history: [],
            student_updates: []
