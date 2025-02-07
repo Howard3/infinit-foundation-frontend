@@ -11,6 +11,7 @@ defmodule InfinitFoundationFrontendWeb.AuthController do
     render(conn, :sign_up)
   end
 
+  @spec sign_in_callback(any(), any()) :: Plug.Conn.t()
   def sign_in_callback(conn, _params) do
     with session_token when is_binary(session_token) <- conn.cookies["__session"],
          {:ok, claims} <- InfinitFoundationFrontend.Guardian.decode_and_verify(session_token),

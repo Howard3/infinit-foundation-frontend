@@ -12,15 +12,79 @@ const loadScript = (src) => {
   });
 };
 
+// waitForClerk is a function that is used to wait for the Clerk library to be loaded.
+const waitForClerk = () => {
+  return new Promise((resolve) => {
+    if (window.Clerk) {
+          resolve();
+          return;
+        }
+        const checkClerk = setInterval(() => {
+          if (window.Clerk) {
+            clearInterval(checkClerk);
+            resolve();
+          }
+        }, 100);
+  });
+};
+
 const Hooks = {
+  // PostHogGlobal is a hook that is used to capture the pageview event.
   PostHogGlobal: {
     mounted() {
       posthog.capture("$pageview");
     },
     destroyed() {
       posthog.capture("$pageleave");
+    },
+  },
+
+  // ClerkUserButton is a hook that is used to load the Clerk user button.
+  // It is used to ensure that the Clerk user button is loaded after the page has loaded.
+  ClerkUserButton: {
+    async mounted() {
+      await waitForClerk();
+      await this.clerkLoaded();
+    },
+
+    async clerkLoaded() {
+      await Clerk.load({
+        afterSignOutUrl: "/sign-out"
+      });
+      const userControl = document.getElementById('user-control');
+      const mobileUserControl = document.getElementById('mobile-top-user-control');
+      const userControlContent = document.getElementById('user-control-content');
+      const mobileUserControlContent = document.getElementById('mobile-top-user-control-content');
+      if (Clerk.user) {
+        userControlContent.innerHTML = '';
+        mobileUserControlContent.innerHTML = '';
+        await Clerk.mountUserButton(userControlContent, {afterSignOutUrl: "/sign-out"});
+        await Clerk.mountUserButton(mobileUserControlContent, {afterSignOutUrl: "/sign-out"});
+
+        posthog.identify(Clerk.user.id, {
+          email: Clerk.user.primaryEmailAddress.emailAddress,
+          name: Clerk.user.fullName
+        });
+      }
+
+      userControl.classList.remove('hidden');
+      mobileUserControl.classList.remove('hidden');
     }
   },
+
+  ClerkSignIn: {
+    async mounted() {
+      await waitForClerk();
+      await this.clerkLoaded();
+    },
+
+    async clerkLoaded() {
+      await Clerk.load({});
+      const signIn = document.getElementById('sign-in'); 
+      await Clerk.mountSignIn(signIn, { forceRedirectUrl: '/sign-in-callback' });
+    }
+  },
+
   Payments: {
     async mounted() {
         await this.pushEvent("load_payments", {});

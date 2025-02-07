@@ -18,18 +18,6 @@
           </a>
         </div>
       </div>
-      <script>
-        window.addEventListener('load', async function() {
-          await Clerk.load();
-          const mobileTopUserControl = document.getElementById('mobile-top-user-control');
-          const mobileTopUserControlContent = document.getElementById('mobile-top-user-control-content');
-          if (Clerk.user) {
-            mobileTopUserControlContent.innerHTML = '';
-            await Clerk.mountUserButton(mobileTopUserControlContent);
-          }
-          mobileTopUserControl.classList.remove('hidden');
-        });
-      </script>
       <button
         type="button"
         class="inline-flex items-center justify-center p-2 rounded-md text-gray-300 hover:text-white hover:bg-gray-800"
@@ -66,7 +54,7 @@
         )}
       </nav>
       <div class="flex items-center gap-4">
-        <div id="user-control" phx-update="ignore" class="hidden">
+        <div id="user-control" phx-hook="ClerkUserButton" phx-update="ignore" class="hidden">
           <div id="user-control-content">
             <a
               href="/sign-in"
@@ -76,24 +64,6 @@
             </a>
           </div>
         </div>
-        <script>
-          window.addEventListener('load', async function() {
-            await Clerk.load();
-            const userControl = document.getElementById('user-control');
-            const userControlContent = document.getElementById('user-control-content');
-            if (Clerk.user) {
-              userControlContent.innerHTML = '';
-              await Clerk.mountUserButton(userControlContent, {afterSignOutUrl: "/sign-out"});
-            }
-
-            posthog.identify(Clerk.user.id, {
-              email: Clerk.user.primaryEmailAddress.emailAddress,
-              name: Clerk.user.fullName
-            });
-
-            userControl.classList.remove('hidden');
-          });
-        </script>
         <a
           href="/students"
           class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500"

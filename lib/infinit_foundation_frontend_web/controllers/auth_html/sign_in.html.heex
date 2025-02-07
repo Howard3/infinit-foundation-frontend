@@ -1,14 +1,5 @@
 <div class="min-h-screen bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
   <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-    <div id="sign-in"></div>
-    <script>
-      window.addEventListener('load', async function() {
-        await Clerk.load();
-        
-        // Mount the sign-in component
-        const signIn = document.getElementById('sign-in');
-        await Clerk.mountSignIn(signIn, { forceRedirectUrl: '/sign-in-callback' });
-      });
-    </script>
+    <div phx-hook="ClerkSignIn" id="sign-in"></div>
   </div>
 </div>

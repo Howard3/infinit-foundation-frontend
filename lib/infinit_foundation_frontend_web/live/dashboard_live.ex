@@ -84,11 +84,13 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
     end
   end
 
+  def handle_event("load_payments", _params, socket = %{assigns: %{user_id: "", active_sponsorships: []}}) do
+    {:noreply, socket}
+  end
+
   @impl true
   def handle_event("load_payments", _params, socket = %{assigns: %{user_id: user_id, active_sponsorships: active_sponsorships}}) do
-    Posthog.capture("Viewed Payment History",
-      user_id: user_id
-    )
+    Posthog.capture("Viewed Payment History", user_id: user_id)
     {:ok, results} = Stripe.Charge.search(%{
       query: "metadata[\"sponsor_id\"]:\"#{user_id}\" AND status:\"succeeded\""
     })
