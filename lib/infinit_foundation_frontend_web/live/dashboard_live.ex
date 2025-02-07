@@ -124,6 +124,11 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
     {:noreply, socket}
   end
 
+  # Get the location of the student's school
+  # If the school ID is empty, return an empty string
+  # Otherwise, get the location from the school
+  defp get_location(%Student{school_id: ""}), do: ""
+
   defp get_location(%Student{school_id: school_id}) do
     case ApiClient.list_schools([school_id]) do
       [school | _] -> school.city
