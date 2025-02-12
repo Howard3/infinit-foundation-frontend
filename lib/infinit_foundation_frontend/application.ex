@@ -17,7 +17,9 @@ defmodule InfinitFoundationFrontend.Application do
       # {InfinitFoundationFrontend.Worker, arg},
       # Start to serve requests, typically the last entry
       InfinitFoundationFrontendWeb.Endpoint,
-      InfinitFoundationFrontend.SponsorshipLocks
+      InfinitFoundationFrontend.SponsorshipLocks,
+      # Add the payment intent cleaner worker
+      InfinitFoundationFrontend.Workers.PaymentIntentCleaner
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
