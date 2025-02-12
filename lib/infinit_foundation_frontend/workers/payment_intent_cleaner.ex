@@ -14,6 +14,7 @@ defmodule InfinitFoundationFrontend.Workers.PaymentIntentCleaner do
   @impl true
   def init(state) do
     schedule_cleanup()
+    cleanup_stale_intents() # Run immediately on startup
     {:ok, state}
   end
 
@@ -25,8 +26,6 @@ defmodule InfinitFoundationFrontend.Workers.PaymentIntentCleaner do
   end
 
   defp schedule_cleanup do
-    # Cleanup immediately on startup
-    cleanup_stale_intents()
     Process.send_after(self(), :cleanup, @cleanup_interval)
   end
 
