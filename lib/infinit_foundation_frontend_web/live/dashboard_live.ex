@@ -17,6 +17,8 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
     )
     socket = assign(socket, :user_id, session["user_id"])
     socket = assign(socket, charges: [])
+    socket = assign(socket, page: 1)
+    socket = assign(socket, per_page: 9)
 
     case ApiClient.list_sponsored_students(session["user_id"]) do
       {:ok, sponsorships} ->
@@ -48,10 +50,12 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
         end
 
         # Get recent events
-        recent_events = case ApiClient.list_sponsor_events(session["user_id"], limit: 10) do
+        recent_events = case ApiClient.list_sponsor_events(session["user_id"], limit: 1000) do
           {:ok, %{events: events}} -> events
           {:error, _} -> []
         end
+
+        paginated_events = paginate_events(recent_events, 1, socket.assigns.per_page)
 
         {:ok,
          assign(socket,
@@ -61,6 +65,7 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
              %{label: "Students Supported", value: length(sponsored_students)},
            ],
            recent_events: recent_events,
+           paginated_events: paginated_events,
            payment_history: [], # TODO: Implement payment history
            student_updates: [] # TODO: Implement student updates
          )}
@@ -74,6 +79,7 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
              %{label: "Students Supported", value: "0"},
            ],
            recent_events: [],
+           paginated_events: [],
            payment_history: [],
            student_updates: []
          )}
@@ -113,6 +119,29 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
 
     socket = assign(socket, :charges, charges)
     {:noreply, socket}
+  end
+
+  @impl true
+  def handle_event("previous-page", _, socket) do
+    new_page = max(1, socket.assigns.page - 1)
+    paginated_events = paginate_events(socket.assigns.recent_events, new_page, socket.assigns.per_page)
+
+    {:noreply, assign(socket, page: new_page, paginated_events: paginated_events)}
+  end
+
+  @impl true
+  def handle_event("next-page", _, socket) do
+    total_pages = ceil(length(socket.assigns.recent_events) / socket.assigns.per_page)
+    new_page = min(total_pages, socket.assigns.page + 1)
+    paginated_events = paginate_events(socket.assigns.recent_events, new_page, socket.assigns.per_page)
+
+    {:noreply, assign(socket, page: new_page, paginated_events: paginated_events)}
+  end
+
+  defp paginate_events(events, page, per_page) do
+    events
+    |> Enum.drop((page - 1) * per_page)
+    |> Enum.take(per_page)
   end
 
   @impl true

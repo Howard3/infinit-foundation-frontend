@@ -34,7 +34,7 @@
         <h2 class="text-lg font-semibold text-gray-900 mb-6">Recent Feeding Events</h2>
         <div class="bg-white shadow overflow-hidden rounded-lg px-4 py-5 sm:p-6">
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <%= for event <- @recent_events do %>
+            <%= for event <- @paginated_events do %>
               <div class="flex items-center text-sm border-l-4 border-green-500 bg-green-50 pl-3 py-2 rounded-r-md">
                 <div class="flex-shrink-0">
                   <.icon name="hero-check-circle-solid" class="h-5 w-5 text-green-500" />
@@ -42,11 +42,68 @@
                 <div class="ml-2 min-w-0">
                   <p class="font-medium text-gray-900 truncate">{event.student_name}</p>
                   <p class="text-gray-500 text-xs">
-                    {Calendar.strftime(event.feeding_time, "%b %d, %I:%M %p")}
+                    {Calendar.strftime(event.feeding_time, "%b %d, %I")}
                   </p>
                 </div>
               </div>
             <% end %>
+          </div>
+          
+<!-- Pagination Controls -->
+          <div class="mt-4 flex items-center justify-between border-t border-gray-200 pt-3">
+            <div class="flex flex-1 justify-between sm:hidden">
+              <button
+                phx-click="previous-page"
+                disabled={@page == 1}
+                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Previous
+              </button>
+              <button
+                phx-click="next-page"
+                disabled={@page * @per_page >= length(@recent_events)}
+                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Next
+              </button>
+            </div>
+            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+              <div>
+                <p class="text-sm text-gray-700">
+                  Showing <span class="font-medium">{(@page - 1) * @per_page + 1}</span>
+                  to
+                  <span class="font-medium">
+                    {min(@page * @per_page, length(@recent_events))}
+                  </span>
+                  of{" "}
+                  <span class="font-medium">{length(@recent_events)}</span>
+                  events
+                </p>
+              </div>
+              <div>
+                <nav
+                  class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+                  aria-label="Pagination"
+                >
+                  <button
+                    phx-click="previous-page"
+                    disabled={@page == 1}
+                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                  >
+                    <span class="sr-only">Previous</span>
+                    <.icon name="hero-chevron-left-solid" class="h-5 w-5" />
+                  </button>
+                  <button
+                    phx-click="next-page"
+                    disabled={@page * @per_page >= length(@recent_events)}
+                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+                  >
+                    <span class="sr-only">Next</span>
+                    <.icon name="hero-chevron-right-solid" class="h-5 w-5" />
+                  </button>
+                </nav>
+              </div>
+            </div>
           </div>
         </div>
       </div>
