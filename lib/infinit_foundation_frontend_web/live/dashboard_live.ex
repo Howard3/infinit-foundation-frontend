@@ -41,8 +41,6 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
             }
           end)
 
-        total_months = calculate_total_months(sponsorships)
-
         # Get actual meal count from API
         total_meals = case ApiClient.get_sponsor_impact(session["user_id"]) do
           {:ok, %{total_meal_count: count}} -> count
@@ -61,7 +59,6 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
            impact_metrics: [
              %{label: "Total Meals Provided", value: total_meals},
              %{label: "Students Supported", value: length(sponsored_students)},
-             %{label: "Months of Support", value: total_months},
            ],
            recent_events: recent_events,
            payment_history: [], # TODO: Implement payment history
@@ -75,7 +72,6 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
            impact_metrics: [
              %{label: "Total Meals Provided", value: "0"},
              %{label: "Students Supported", value: "0"},
-             %{label: "Months of Support", value: "0"},
            ],
            recent_events: [],
            payment_history: [],
@@ -134,14 +130,5 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
       [school | _] -> school.city
       _ -> "Unknown Location"
     end
-  end
-
-  defp calculate_total_months(sponsorships) do
-    Enum.reduce(sponsorships, 0, fn sponsorship, acc ->
-      months_between =
-        Date.diff(sponsorship.end_date, sponsorship.start_date)
-        |> div(30) # Approximate months
-      acc + months_between
-    end)
   end
 end
