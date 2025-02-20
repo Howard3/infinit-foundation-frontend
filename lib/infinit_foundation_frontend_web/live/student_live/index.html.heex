@@ -1,12 +1,14 @@
 <div class="bg-white">
   <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12">
-    <div class="text-center">
-      <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-        Students Needing Support
-      </h2>
-      <p class="mx-auto mt-3 max-w-2xl text-xl text-gray-500 sm:mt-4">
-        Sponsor a child's nutrition for $1 per day.
-      </p>
+    <div class="lg:flex lg:items-center lg:justify-between lg:space-x-8">
+      <div class="text-center lg:text-left lg:flex-1">
+        <h2 class="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+          Students Needing Support
+        </h2>
+        <p class="mt-3 text-xl text-gray-500">
+          Sponsor a child's nutrition for $1 per day.
+        </p>
+      </div>
     </div>
     
 <!-- Location filter; only show if there are multiple locations -->
@@ -57,7 +59,21 @@
         <div class="bg-white overflow-hidden rounded-2xl border border-gray-200 shadow-sm hover:shadow-lg transition-shadow duration-200">
           <div class="relative h-48">
             <%= if student.image_url do %>
-              <img src={student.image_url} alt={student.name} class="w-full h-full object-cover" />
+              <div class="relative w-full h-full select-none">
+                <img
+                  src={student.image_url}
+                  alt={student.name}
+                  class="w-full h-full object-cover pointer-events-none"
+                  draggable="false"
+                  oncontextmenu="return false"
+                />
+                <div
+                  class="absolute inset-0 backdrop-blur-lg"
+                  style="clip-path: polygon(25% 0%, 75% 0%, 75% 100%, 25% 100%);"
+                >
+                  <!-- This overlay creates a blurred vertical strip -->
+                </div>
+              </div>
             <% else %>
               <div class="w-full h-full bg-gray-100 flex items-center justify-center">
                 <span class="text-gray-400 text-sm">No image available</span>
