@@ -31,79 +31,89 @@
       
 <!-- Recent Feeding Events -->
       <div>
-        <h2 class="text-lg font-semibold text-gray-900 mb-6">Recent Feeding Events</h2>
-        <div class="bg-white shadow overflow-hidden rounded-lg px-4 py-5 sm:p-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <%= for event <- @paginated_events do %>
-              <div class="flex items-center text-sm border-l-4 border-green-500 bg-green-50 pl-3 py-2 rounded-r-md">
-                <div class="flex-shrink-0">
-                  <.icon name="hero-check-circle-solid" class="h-5 w-5 text-green-500" />
-                </div>
-                <div class="ml-2 min-w-0">
-                  <p class="font-medium text-gray-900 truncate">{event.student_name}</p>
-                  <p class="text-gray-500 text-xs">
-                    {Calendar.strftime(event.feeding_time, "%b %d, %I")}
-                  </p>
-                </div>
+        <h2 class="text-lg font-semibold text-gray-900 mb-4">Recent Feeding Events</h2>
+        <div
+          class="bg-white shadow overflow-hidden rounded-lg"
+          id="responsive-container"
+          phx-hook="Responsive"
+        >
+          <!-- Container with centered cards -->
+          <div class="relative h-[28rem]">
+            <div class="absolute inset-0 flex justify-center">
+              <div class="w-full md:w-[calc(320px*2+1rem)] lg:w-[calc(320px*3+2rem)] flex items-center h-full justify-between px-4 md:px-0">
+                <%= for {event, index} <- Enum.with_index(@paginated_events) do %>
+                  <div class={[
+                    "w-full md:w-80 shrink-0 transition-all duration-300 hover:scale-105",
+                    index > 0 && "hidden md:block"
+                  ]}>
+                    <%= if event.feeding_image_id do %>
+                      <div class="h-[28rem] overflow-hidden shadow-xl relative">
+                        <img
+                          src={"/sponsor/feeding/photo/#{event.feeding_image_id}"}
+                          alt="Feeding event photo"
+                          class="w-full h-full object-cover"
+                        />
+                        <!-- Gradient overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent">
+                        </div>
+                        
+<!-- Text overlay -->
+                        <div class="absolute inset-0 flex items-end justify-end p-4">
+                          <div class="bg-black/40 backdrop-blur-sm px-4 py-2 rounded-lg">
+                            <p class="font-medium text-lg text-white leading-snug">
+                              {event.student_name}
+                            </p>
+                            <p class="text-sm text-gray-200">
+                              {Calendar.strftime(event.feeding_time, "%B %d")}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    <% else %>
+                      <div class="h-[24rem] overflow-hidden shadow-xl bg-gray-100 flex items-center justify-center">
+                        <.icon name="hero-check-circle-solid" class="h-16 w-16 text-green-500" />
+                      </div>
+                    <% end %>
+                  </div>
+                <% end %>
               </div>
-            <% end %>
+            </div>
           </div>
           
 <!-- Pagination Controls -->
-          <div class="mt-4 flex items-center justify-between border-t border-gray-200 pt-3">
-            <div class="flex flex-1 justify-between sm:hidden">
-              <button
-                phx-click="previous-page"
-                disabled={@page == 1}
-                class="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              >
-                Previous
-              </button>
-              <button
-                phx-click="next-page"
-                disabled={@page * @per_page >= length(@recent_events)}
-                class="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50"
-              >
-                Next
-              </button>
-            </div>
-            <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-              <div>
-                <p class="text-sm text-gray-700">
-                  Showing <span class="font-medium">{(@page - 1) * @per_page + 1}</span>
+          <div class="p-4 flex items-center justify-between border-t border-gray-200">
+            <button
+              phx-click="previous-page"
+              disabled={@page == 1}
+              class="relative inline-flex items-center rounded-md px-4 py-3 md:px-6 md:py-4 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+            >
+              <span class="sr-only">Previous</span>
+              <.icon name="hero-chevron-left-solid" class="h-6 w-6 md:h-8 md:w-8" />
+            </button>
+
+            <div class="text-center">
+              <p class="text-sm md:text-base text-gray-700">
+                <span class="font-medium">{(@page - 1) * @per_page + 1}</span>
+                <span class="md:inline hidden">
                   to
                   <span class="font-medium">
                     {min(@page * @per_page, length(@recent_events))}
                   </span>
-                  of{" "}
-                  <span class="font-medium">{length(@recent_events)}</span>
-                  events
-                </p>
-              </div>
-              <div>
-                <nav
-                  class="isolate inline-flex -space-x-px rounded-md shadow-sm"
-                  aria-label="Pagination"
-                >
-                  <button
-                    phx-click="previous-page"
-                    disabled={@page == 1}
-                    class="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
-                  >
-                    <span class="sr-only">Previous</span>
-                    <.icon name="hero-chevron-left-solid" class="h-5 w-5" />
-                  </button>
-                  <button
-                    phx-click="next-page"
-                    disabled={@page * @per_page >= length(@recent_events)}
-                    class="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
-                  >
-                    <span class="sr-only">Next</span>
-                    <.icon name="hero-chevron-right-solid" class="h-5 w-5" />
-                  </button>
-                </nav>
-              </div>
+                </span>
+                of{" "}
+                <span class="font-medium">{length(@recent_events)}</span>
+                events
+              </p>
             </div>
+
+            <button
+              phx-click="next-page"
+              disabled={@page * @per_page >= length(@recent_events)}
+              class="relative inline-flex items-center rounded-md px-4 py-3 md:px-6 md:py-4 text-gray-400 ring-1 ring-inset ring-gray-300 hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50"
+            >
+              <span class="sr-only">Next</span>
+              <.icon name="hero-chevron-right-solid" class="h-6 w-6 md:h-8 md:w-8" />
+            </button>
           </div>
         </div>
       </div>

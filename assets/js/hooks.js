@@ -185,6 +185,27 @@ const Hooks = {
         clearInterval(this.timer);
       }
     }
+  },
+
+  // Add the Responsive hook directly here
+  Responsive: {
+    mounted() {
+      this.handleResize = () => {
+        const isMobile = window.innerWidth < 768; // md breakpoint
+        const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024; // between md and lg
+        const perPage = isMobile ? 1 : (isTablet ? 2 : 3);
+        
+        this.pushEvent("viewport-changed", { perPage });
+      };
+
+      window.addEventListener("resize", this.handleResize);
+      // Initial check
+      this.handleResize();
+    },
+
+    destroyed() {
+      window.removeEventListener("resize", this.handleResize);
+    }
   }
 }
 

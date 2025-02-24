@@ -96,9 +96,10 @@ defmodule InfinitFoundationFrontend.Schemas do
       student_name: String.t(),
       feeding_time: NaiveDateTime.t(),
       school_id: String.t(),
-      event_type: String.t()
+      event_type: String.t(),
+      feeding_image_id: String.t()
     }
 
-    defstruct [:student_id, :student_name, :feeding_time, :school_id, :event_type]
+    defstruct [:student_id, :student_name, :feeding_time, :school_id, :event_type, :feeding_image_id]
   end
 end

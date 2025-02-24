@@ -18,7 +18,7 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
     socket = assign(socket, :user_id, session["user_id"])
     socket = assign(socket, charges: [])
     socket = assign(socket, page: 1)
-    socket = assign(socket, per_page: 9)
+    socket = assign(socket, per_page: 3)
 
     case ApiClient.list_sponsored_students(session["user_id"]) do
       {:ok, sponsorships} ->
@@ -136,6 +136,15 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
     paginated_events = paginate_events(socket.assigns.recent_events, new_page, socket.assigns.per_page)
 
     {:noreply, assign(socket, page: new_page, paginated_events: paginated_events)}
+  end
+
+  @impl true
+  def handle_event("viewport-changed", %{"perPage" => per_page}, socket) do
+    paginated_events = paginate_events(socket.assigns.recent_events, socket.assigns.page, per_page)
+
+    {:noreply, socket
+      |> assign(:per_page, per_page)
+      |> assign(:paginated_events, paginated_events)}
   end
 
   defp paginate_events(events, page, per_page) do

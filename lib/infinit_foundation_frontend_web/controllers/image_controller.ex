@@ -23,6 +23,21 @@ defmodule InfinitFoundationFrontendWeb.ImageController do
     end
   end
 
+  def proxy_feeding_photo(conn, %{"id" => id}) do
+    case Req.get!(ApiClient.feeding_photo_url(id)) do
+      %{status: 200, body: image_data, headers: headers} ->
+        content_type = extract_content_type(headers)
+
+        conn
+        |> put_resp_content_type(List.first(content_type))
+        |> send_resp(200, image_data)
+
+      _error ->
+        conn
+        |> put_status(:not_found)
+    end
+  end
+
   defp extract_content_type(headers) do
     {_, content_type} = Enum.find(headers, {"content-type", "application/octet-stream"},
       fn {k, _v} -> String.downcase(k) == "content-type" end)

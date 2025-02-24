@@ -54,6 +54,10 @@ defmodule InfinitFoundationFrontend.ApiClient do
     }
   end
 
+  def feeding_photo_url(id) when is_binary(id) do
+    feeding_photo_base_url() <> "/" <> id
+  end
+
   def photo_url(relative_path) when is_binary(relative_path) do
     case relative_path do
       "/student/profile/photo/" <> _rest ->
@@ -66,6 +70,8 @@ defmodule InfinitFoundationFrontend.ApiClient do
   defp api_key, do: Application.get_env(:infinit_foundation_frontend, :feeding_backend)[:api_key]
   defp base_url, do: Application.get_env(:infinit_foundation_frontend, :feeding_backend)[:base_url]
   defp photo_base_url, do: base_url() |> String.replace("/api", "/student/profile/photo")
+  defp feeding_photo_base_url, do: base_url() |> String.replace("/api", "/student/feeding/photo")
+
   defp url(path), do: base_url() <> path
 
   defp default_headers do
@@ -191,7 +197,8 @@ defmodule InfinitFoundationFrontend.ApiClient do
               student_name: event["studentName"],
               feeding_time: NaiveDateTime.from_iso8601!(event["feedingTime"]),
               school_id: event["schoolId"],
-              event_type: event["eventType"]
+              event_type: event["eventType"],
+              feeding_image_id: event["feedingImageId"]
             }
           end),
           total: total
