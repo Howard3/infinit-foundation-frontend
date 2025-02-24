@@ -206,6 +206,189 @@ const Hooks = {
     destroyed() {
       window.removeEventListener("resize", this.handleResize);
     }
+  },
+
+  FeedingChart: {
+    mounted() {
+      this.createChart();
+    },
+
+    updated() {
+      // Clear existing chart before redrawing
+      d3.select(this.el).selectAll("*").remove();
+      this.createChart();
+    },
+
+    destroyed() {
+      d3.select(this.el).selectAll("*").remove();
+    },
+
+    createChart() {
+      const container = this.el;  // Store reference to container
+      const data = JSON.parse(container.dataset.counts).map((count, i) => ({
+        date: new Date(JSON.parse(container.dataset.dates)[i]),
+        value: count
+      }));
+
+      // Set dimensions and margins
+      const margin = { top: 20, right: 30, bottom: 30, left: 50 };  // Increased left margin
+      const width = container.offsetWidth - margin.left - margin.right;
+      const height = container.offsetHeight - margin.top - margin.bottom;
+
+      // Create SVG container
+      const svg = d3.select(container)
+        .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+        .append("g")
+        .attr("transform", `translate(${margin.left},${margin.top})`);
+
+      // Create scales
+      const x = d3.scaleTime()
+        .domain(d3.extent(data, d => d.date))
+        .range([0, width]);
+
+      const y = d3.scaleLinear()
+        .domain([0, d3.max(data, d => d.value)])
+        .nice()
+        .range([height, 0]);
+
+      // Create line generator
+      const line = d3.line()
+        .x(d => x(d.date))
+        .y(d => y(d.value))
+        .curve(d3.curveMonotoneX);
+
+      // Create area generator for fill
+      const area = d3.area()
+        .x(d => x(d.date))
+        .y0(height)
+        .y1(d => y(d.value))
+        .curve(d3.curveMonotoneX);
+
+      // Add the area fill
+      svg.append("path")
+        .datum(data)
+        .attr("fill", "rgba(220, 38, 38, 0.1)")
+        .attr("d", area);
+
+      // Add the line path
+      svg.append("path")
+        .datum(data)
+        .attr("fill", "none")
+        .attr("stroke", "rgb(220, 38, 38)")
+        .attr("stroke-width", 2)
+        .attr("d", line)
+        .attr("class", "line");
+
+      // Add axes
+      svg.append("g")
+        .attr("transform", `translate(0,${height})`)
+        .call(d3.axisBottom(x)
+          .ticks(width > 600 ? 10 : 5)
+          .tickFormat(d3.timeFormat("%b %d")))
+        .call(g => g.select(".domain").attr("stroke-opacity", 0.2))
+        .call(g => g.selectAll(".tick line").attr("stroke-opacity", 0.2));
+
+      // Remove the left axis and add value labels directly on the grid lines
+      svg.append("g")
+        .selectAll("line")
+        .data(y.ticks(5))
+        .join("line")
+        .attr("x1", 0)
+        .attr("x2", width)
+        .attr("y1", d => y(d))
+        .attr("y2", d => y(d))
+        .attr("stroke", "#e5e7eb")  // gray-200
+        .attr("stroke-opacity", 0.5);
+
+      // Add value labels on the left
+      svg.append("g")
+        .selectAll("text")
+        .data(y.ticks(5))
+        .join("text")
+        .attr("x", -8)  // Move labels to the left of the line
+        .attr("y", d => y(d))
+        .attr("dy", "0.32em")
+        .attr("fill", "#6B7280")  // gray-500
+        .attr("font-size", "12px")
+        .attr("text-anchor", "end")  // Right-align text
+        .text(d => d);
+
+      // Add "Total Meals" label - vertical and to the right of value labels
+      svg.append("text")
+        .attr("x", -25)  // Position to right of value labels
+        .attr("y", height / 2)  // Center vertically
+        .attr("transform", "rotate(-90, -25, " + (height / 2) + ")")  // Rotate around its position
+        .attr("fill", "#6B7280")
+        .attr("font-size", "12px")
+        .attr("font-weight", "500")
+        .attr("text-anchor", "middle")  // Center the text on its point
+        .text("Total Meals");
+
+      // Add hover effects
+      const tooltip = d3.select(container)
+        .append("div")
+        .attr("class", "chart-tooltip")
+        .style("position", "absolute")
+        .style("visibility", "hidden")
+        .style("background-color", "rgba(0, 0, 0, 0.8)")
+        .style("color", "white")
+        .style("padding", "8px")
+        .style("border-radius", "4px")
+        .style("font-size", "12px")
+        .style("pointer-events", "none")
+        .style("z-index", "10");
+
+      const bisect = d3.bisector(d => d.date).left;
+
+      svg.append("rect")
+        .attr("width", width)
+        .attr("height", height)
+        .style("fill", "none")
+        .style("pointer-events", "all")
+        .on("mousemove", function(event) {
+          const bounds = container.getBoundingClientRect();
+          const [mouseX, mouseY] = d3.pointer(event, this);
+          const x0 = x.invert(mouseX);
+          const i = bisect(data, x0, 1);
+          const d0 = data[i - 1];
+          const d1 = data[i];
+          const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+          
+          tooltip
+            .style("visibility", "visible")
+            .html(`Total Meals: ${d.value}<br>${d3.timeFormat("%B %d")(d.date)}`);
+        })
+        .on("mouseout", () => tooltip.style("visibility", "hidden"));
+    }
+  },
+
+  ImageModal: {
+    mounted() {
+      const modal = document.getElementById('image-modal');
+      const modalImg = document.getElementById('modal-image');
+
+      window.addEventListener('show-image', (e) => {
+        modalImg.src = e.detail.src;
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      });
+
+      // Handle click on the entire modal container
+      modal.addEventListener('click', (e) => {
+        // Close if clicking outside the image
+        if (!e.target.closest('img')) {
+          modal.classList.add('hidden');
+          document.body.style.overflow = '';
+        }
+      });
+
+      this.handleEvent("hide-modal", () => {
+        modal.classList.add('hidden');
+        document.body.style.overflow = '';
+      });
+    }
   }
 }
 

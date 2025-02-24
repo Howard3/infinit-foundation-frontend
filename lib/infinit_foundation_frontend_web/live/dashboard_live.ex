@@ -49,11 +49,14 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
           {:error, _} -> 0
         end
 
-        # Get recent events
+        # Get recent events and process for graph
         recent_events = case ApiClient.list_sponsor_events(session["user_id"], limit: 1000) do
           {:ok, %{events: events}} -> events
           {:error, _} -> []
         end
+
+        # Process events for graph data
+        feeding_stats = process_feeding_stats(recent_events)
 
         paginated_events = paginate_events(recent_events, 1, socket.assigns.per_page)
 
@@ -67,7 +70,8 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
            recent_events: recent_events,
            paginated_events: paginated_events,
            payment_history: [], # TODO: Implement payment history
-           student_updates: [] # TODO: Implement student updates
+           student_updates: [], # TODO: Implement student updates
+           feeding_stats: feeding_stats
          )}
 
       {:error, _} ->
@@ -81,7 +85,8 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
            recent_events: [],
            paginated_events: [],
            payment_history: [],
-           student_updates: []
+           student_updates: [],
+           feeding_stats: %{dates: [], counts: []}
          )}
     end
   end
@@ -147,6 +152,11 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
       |> assign(:paginated_events, paginated_events)}
   end
 
+  @impl true
+  def handle_event("close_modal", _, socket) do
+    {:noreply, push_event(socket, "hide-modal", %{})}
+  end
+
   defp paginate_events(events, page, per_page) do
     events
     |> Enum.drop((page - 1) * per_page)
@@ -168,5 +178,33 @@ defmodule InfinitFoundationFrontendWeb.DashboardLive do
       [school | _] -> school.city
       _ -> "Unknown Location"
     end
+  end
+
+  # Helper to process feeding events into cumulative daily counts
+  defp process_feeding_stats(events) do
+    # Group events by date and count them
+    daily_counts = events
+    |> Enum.group_by(fn event ->
+      NaiveDateTime.to_date(event.feeding_time)
+    end)
+    |> Map.new(fn {date, events} ->
+      {Date.to_string(date), length(events)}
+    end)
+
+    # Get last 30 days
+    today = Date.utc_today()
+    dates = Date.range(Date.add(today, -29), today)
+
+    # Create sorted lists of dates and cumulative counts
+    dates_list = Enum.map(dates, &Date.to_string/1)
+    counts_list = dates_list
+    |> Enum.scan(0, fn date, acc ->
+      acc + Map.get(daily_counts, date, 0)
+    end)
+
+    %{
+      dates: dates_list,
+      counts: counts_list
+    }
   end
 end
