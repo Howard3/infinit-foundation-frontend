@@ -54,6 +54,15 @@ mix fly.production.console
 
 Ready to run in production? Please [check our deployment guides](https://hexdocs.pm/phoenix/deployment.html).
 
+### Brevo Templates
+This project uses Brevo for sending emails. The templates are stored in Brevo and the IDs are stored in the database.
+
+To list all Brevo templates and their IDs, in interactive IEx session, run:
+
+```bash
+InfinitFoundationFrontend.Brevo.list_templates_id_map!
+```
+
 ## Learn more
 
   * Official website: https://www.phoenixframework.org/

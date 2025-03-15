@@ -137,3 +137,5 @@ config :infinit_foundation_frontend, :stripe,
 config :posthog,
   api_url: "https://us.i.posthog.com",
   api_key: System.get_env("POSTHOG_API_KEY") || raise("POSTHOG_API_KEY is not set")
+
+config :infinit_foundation_frontend, :brevo_api_key, System.get_env("BREVO_API_KEY") || raise("BREVO_API_KEY is not set")

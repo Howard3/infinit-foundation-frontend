@@ -67,3 +67,12 @@ config :phoenix, :json_library, Jason
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
 import_config "#{config_env()}.exs"
+
+# Configure Brevo template IDs
+config :infinit_foundation_frontend, :brevo_templates, %{
+  registration: 1,
+  donation_thank_you: 2,
+  weekly_updates: 3,
+  semester_updates: 4,
+  pre_renewal_reminder: 5,
+}
