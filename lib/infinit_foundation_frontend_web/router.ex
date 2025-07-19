@@ -10,8 +10,16 @@ defmodule InfinitFoundationFrontendWeb.Router do
     plug :put_secure_browser_headers
   end
 
+  pipeline :webhook do
+    plug :accepts, ["json"]
+  end
+
   pipeline :api do
     plug :accepts, ["json"]
+  end
+
+  pipeline :require_auth do
+    plug InfinitFoundationFrontendWeb.Plugs.EnsureAuth
   end
 
   scope "/", InfinitFoundationFrontendWeb do
@@ -45,8 +53,10 @@ defmodule InfinitFoundationFrontendWeb.Router do
     live "/dashboard", DashboardLive, :index
   end
 
-  pipeline :require_auth do
-    plug InfinitFoundationFrontendWeb.Plugs.EnsureAuth
+  scope "/", InfinitFoundationFrontendWeb do
+    pipe_through :webhook
+
+    post "/clerk/webhook", ClerkController, :webhook
   end
 
   # Other scopes may use custom stacks.
