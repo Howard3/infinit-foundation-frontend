@@ -1,6 +1,40 @@
 defmodule InfinitFoundationFrontend.Brevo do
   @api_host "https://api.brevo.com/v3"
 
+  def upsert_contact(email, attributes \\ %{FIRSTNAME: "", LASTNAME: ""}, list_ids \\ []) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"accept", "application/json"},
+      {"api-key", get_api_key()}
+    ]
+
+    if email == "" or attributes[:FIRSTNAME] == "" or attributes[:LASTNAME] == "" do
+      raise ArgumentError, "email, FIRSTNAME, and LASTNAME are required"
+    end
+
+    body =
+      %{
+        email: email,
+        attributes: attributes,
+        listIds: list_ids,
+        updateEnabled: true
+      }
+
+    case Req.post(@api_host <> "/contacts", json: body, headers: headers) do
+      {:ok, %{status: 201, body: body}} ->
+        {:ok, body}
+
+      {:ok, %{status: 204, body: body}} ->
+        {:ok, body}
+
+      {:ok, %{status: status, body: body}} ->
+        {:error, %{status: status, body: body}}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
   def create_contact(email, attributes \\ %{FIRSTNAME: "", LASTNAME: ""}, list_ids \\ []) do
     headers = [
       {"Content-Type", "application/json"},
