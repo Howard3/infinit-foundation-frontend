@@ -41,7 +41,8 @@ defmodule InfinitFoundationFrontend.Events.Handler do
       Logger.info("Sending event to brevo", event: event)
 
       # TODO: CACHE THIS
-      get_user_email_from_clerk(user_id)
+
+      Brevo.User.new_from_id!(user_id)
       |> Brevo.send_event(event, properties)
       |> dbg
     end)
@@ -52,13 +53,5 @@ defmodule InfinitFoundationFrontend.Events.Handler do
       Logger.info("Sending event to posthog", event: event)
       Posthog.capture(event, user_id: user_id, properties: properties)
     end)
-  end
-
-  defp get_user_email_from_clerk(user_id) do
-    Logger.info("Fetching user from clerk", user_id: user_id)
-
-    {:ok, user_data} = Clerk.get_user(user_id)
-
-    Clerk.extract_email(user_data)
   end
 end

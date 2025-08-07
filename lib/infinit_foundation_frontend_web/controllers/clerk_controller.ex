@@ -2,6 +2,7 @@ defmodule InfinitFoundationFrontendWeb.ClerkController do
   use InfinitFoundationFrontendWeb, :controller
   require Logger
   alias InfinitFoundationFrontend.Brevo
+  alias InfinitFoundationFrontend.Events
 
   def webhook(conn, params) do
     Logger.info("Clerk webhook received: #{inspect(params)}")

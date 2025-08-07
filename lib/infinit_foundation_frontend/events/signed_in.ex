@@ -1,6 +1,6 @@
 defmodule InfinitFoundationFrontend.Events.SignedIn do
   @type t :: %__MODULE__{
-          user_id: String.t()
+          user_id: String.t(),
         }
   defstruct [:user_id]
 

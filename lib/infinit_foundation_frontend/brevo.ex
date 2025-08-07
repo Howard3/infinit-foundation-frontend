@@ -1,6 +1,47 @@
 defmodule InfinitFoundationFrontend.Brevo do
   @api_host "https://api.brevo.com/v3"
 
+  alias InfinitFoundationFrontend.Clerk
+
+  defmodule User do
+    """
+    Represents a user in Brevo.
+    """
+    defstruct [:id, :email, :first_name, :last_name]
+
+    def new(id, email, first_name, last_name) do
+      %__MODULE__{
+        id: id,
+        email: email,
+        first_name: first_name,
+        last_name: last_name
+      }
+    end
+
+    def new_from_id(user_id) do
+      with {:ok, user} <- Clerk.get_user(user_id),
+           email <- Clerk.extract_email(user),
+           first_name <- Clerk.extract_first_name(user),
+           last_name <- Clerk.extract_last_name(user) do
+        {:ok, new(user_id, email, first_name, last_name)}
+      end
+    end
+
+    def new_from_id!(user_id) do
+      case new_from_id(user_id) do
+        {:ok, user} -> user
+        {:error, reason} -> raise RuntimeError, message: "Failed to create user: #{reason}"
+      end
+    end
+
+    def to_contact_properties(user = %__MODULE__{}) do
+      %{
+        FIRSTNAME: user.first_name,
+        LASTNAME: user.last_name
+      }
+    end
+  end
+
   def upsert_contact(email, attributes \\ %{FIRSTNAME: "", LASTNAME: ""}, list_ids \\ []) do
     headers = [
       {"Content-Type", "application/json"},
@@ -35,15 +76,15 @@ defmodule InfinitFoundationFrontend.Brevo do
     end
   end
 
-  def send_event(email, event, event_data)
-      when is_binary(email) and is_binary(event) and is_map(event_data) do
+  def send_event(user = %User{}, event, event_data)
+      when is_binary(event) and is_map(event_data) do
     headers = [
       {"Content-Type", "application/json"},
       {"accept", "application/json"},
       {"api-key", get_api_key()}
     ]
 
-    if email == "" or event == "" do
+    if user.email == "" or event == "" do
       raise {:error, "Email and event are required"}
     end
 
@@ -51,8 +92,9 @@ defmodule InfinitFoundationFrontend.Brevo do
       event_name: event,
       event_properties: event_data,
       identifiers: %{
-        email_id: email
-      }
+        email_id: user.email
+      },
+      contact_properties: User.to_contact_properties(user)
     }
 
     case(Req.post(@api_host <> "/events", json: body, headers: headers)) do

@@ -29,6 +29,20 @@ defmodule InfinitFoundationFrontend.Clerk do
     end
   end
 
+  def extract_first_name(user_data) when is_map(user_data) do
+    case user_data["first_name"] do
+      nil -> nil
+      first_name -> first_name
+    end
+  end
+
+  def extract_last_name(user_data) when is_map(user_data) do
+    case user_data["last_name"] do
+      nil -> nil
+      last_name -> last_name
+    end
+  end
+
   @doc """
   Extracts the primary email address from Clerk user data.
   Returns the email string or nil if not found.
