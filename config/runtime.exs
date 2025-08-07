@@ -33,12 +33,13 @@ if config_env() == :prod do
       You can generate one by calling: mix phx.gen.secret
       """
 
-    signing_salt =
-      System.get_env("SESSION_SIGNING_SALT") ||
-        raise """
-        environment variable SESSION_SIGNING_SALT is missing.
-        You can generate one by calling: mix phx.gen.secret
-        """
+  signing_salt =
+    System.get_env("SESSION_SIGNING_SALT") ||
+      raise """
+      environment variable SESSION_SIGNING_SALT is missing.
+      You can generate one by calling: mix phx.gen.secret
+      """
+
   host = System.get_env("PHX_HOST") || raise("PHX_HOST is not set")
   port = String.to_integer(System.get_env("PORT") || "4000")
 
@@ -111,12 +112,12 @@ if config_env() == :prod do
   #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
-
 end
 
 config :infinit_foundation_frontend, :feeding_backend,
-    base_url: System.get_env("FEEDING_BACKEND_URL") || raise("FEEDING_BACKEND_URL is not set"),
-    api_key: System.get_env("FEEDING_BACKEND_API_KEY") || raise("FEEDING_BACKEND_API_KEY is not set")
+  base_url: System.get_env("FEEDING_BACKEND_URL") || raise("FEEDING_BACKEND_URL is not set"),
+  api_key:
+    System.get_env("FEEDING_BACKEND_API_KEY") || raise("FEEDING_BACKEND_API_KEY is not set")
 
 config :infinit_foundation_frontend, InfinitFoundationFrontend.Guardian,
   issuer: System.get_env("CLERK_FRONTEND_API") || raise("CLERK_FRONTEND_API is not set"),
@@ -126,9 +127,12 @@ config :infinit_foundation_frontend, InfinitFoundationFrontend.Guardian,
 
 config :infinit_foundation_frontend, :clerk,
   frontend_api: System.get_env("CLERK_FRONTEND_API") || raise("CLERK_FRONTEND_API is not set"),
-  publishable_key: System.get_env("CLERK_PUBLISHABLE_KEY") || raise("CLERK_PUBLISHABLE_KEY is not set")
+  publishable_key:
+    System.get_env("CLERK_PUBLISHABLE_KEY") || raise("CLERK_PUBLISHABLE_KEY is not set"),
+  secret_key: System.get_env("CLERK_SECRET_KEY") || raise("CLERK_SECRET_KEY is not set")
 
-config :stripity_stripe, api_key: System.get_env("STRIPE_SECRET_KEY") || raise("STRIPE_SECRET_KEY is not set")
+config :stripity_stripe,
+  api_key: System.get_env("STRIPE_SECRET_KEY") || raise("STRIPE_SECRET_KEY is not set")
 
 config :infinit_foundation_frontend, :stripe,
   public_key: System.get_env("STRIPE_PUBLIC_KEY") || raise("STRIPE_PUBLIC_KEY is not set"),
@@ -138,4 +142,6 @@ config :posthog,
   api_url: "https://us.i.posthog.com",
   api_key: System.get_env("POSTHOG_API_KEY") || raise("POSTHOG_API_KEY is not set")
 
-config :infinit_foundation_frontend, :brevo_api_key, System.get_env("BREVO_API_KEY") || raise("BREVO_API_KEY is not set")
+config :infinit_foundation_frontend,
+       :brevo_api_key,
+       System.get_env("BREVO_API_KEY") || raise("BREVO_API_KEY is not set")

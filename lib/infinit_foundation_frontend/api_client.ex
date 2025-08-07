@@ -9,7 +9,6 @@ defmodule InfinitFoundationFrontend.ApiClient do
     SponsorEvent
   }
 
-
   @page_size 18
 
   @spec list_locations() :: [Location.t()]
@@ -45,7 +44,9 @@ defmodule InfinitFoundationFrontend.ApiClient do
   defp do_list_students(params) do
     params_with_defaults = Map.put_new(params, :limit, @page_size)
 
-    response = Req.get!(url("/students"), headers: default_headers(), params: params_with_defaults)
+    response =
+      Req.get!(url("/students"), headers: default_headers(), params: params_with_defaults)
+
     body = response.body
 
     %PaginatedStudents{
@@ -62,13 +63,18 @@ defmodule InfinitFoundationFrontend.ApiClient do
     case relative_path do
       "/student/profile/photo/" <> _rest ->
         relative_path
-      _ -> # FIXME: this is a little hacky, but it works for now
+
+      # FIXME: this is a little hacky, but it works for now
+      _ ->
         photo_base_url() <> relative_path
     end
   end
 
   defp api_key, do: Application.get_env(:infinit_foundation_frontend, :feeding_backend)[:api_key]
-  defp base_url, do: Application.get_env(:infinit_foundation_frontend, :feeding_backend)[:base_url]
+
+  defp base_url,
+    do: Application.get_env(:infinit_foundation_frontend, :feeding_backend)[:base_url]
+
   defp photo_base_url, do: base_url() |> String.replace("/api", "/student/profile/photo")
   defp feeding_photo_base_url, do: base_url() |> String.replace("/api", "/student/feeding/photo")
 
@@ -91,6 +97,10 @@ defmodule InfinitFoundationFrontend.ApiClient do
       date_of_birth: data["dateOfBirth"],
       grade: data["grade"]
     }
+  end
+
+  def get_student_full_name(%Student{first_name: first_name, last_name: last_name}) do
+    "#{first_name} #{last_name}"
   end
 
   def list_schools([]), do: []
@@ -130,10 +140,10 @@ defmodule InfinitFoundationFrontend.ApiClient do
     }
 
     case Req.post!(
-      url("/students/#{student_id}/sponsor"),
-      headers: default_headers(),
-      json: body
-    ) do
+           url("/students/#{student_id}/sponsor"),
+           headers: default_headers(),
+           json: body
+         ) do
       %{status: 200, body: %{"success" => true}} -> :ok
       response -> {:error, response}
     end
@@ -181,28 +191,32 @@ defmodule InfinitFoundationFrontend.ApiClient do
   Gets the recent events for a sponsor.
   Returns {:ok, %{events: [SponsorEvent.t()], total: integer}} on success or {:error, any} on failure.
   """
-  @spec list_sponsor_events(String.t(), keyword()) :: {:ok, %{events: [SponsorEvent.t()], total: integer}} | {:error, any()}
+  @spec list_sponsor_events(String.t(), keyword()) ::
+          {:ok, %{events: [SponsorEvent.t()], total: integer}} | {:error, any()}
   def list_sponsor_events(sponsor_id, opts \\ []) do
     page = Keyword.get(opts, :page, 1)
     limit = Keyword.get(opts, :limit, 10)
 
     case Req.get!(url("/sponsors/#{sponsor_id}/events"),
-         headers: default_headers(),
-         params: %{page: page, limit: limit}) do
+           headers: default_headers(),
+           params: %{page: page, limit: limit}
+         ) do
       %{status: 200, body: %{"events" => events, "total" => total}} ->
-        {:ok, %{
-          events: Enum.map(events, fn event ->
-            %SponsorEvent{
-              student_id: event["studentId"],
-              student_name: event["studentName"],
-              feeding_time: NaiveDateTime.from_iso8601!(event["feedingTime"]),
-              school_id: event["schoolId"],
-              event_type: event["eventType"],
-              feeding_image_id: event["feedingImageId"]
-            }
-          end),
-          total: total
-        }}
+        {:ok,
+         %{
+           events:
+             Enum.map(events, fn event ->
+               %SponsorEvent{
+                 student_id: event["studentId"],
+                 student_name: event["studentName"],
+                 feeding_time: NaiveDateTime.from_iso8601!(event["feedingTime"]),
+                 school_id: event["schoolId"],
+                 event_type: event["eventType"],
+                 feeding_image_id: event["feedingImageId"]
+               }
+             end),
+           total: total
+         }}
 
       response ->
         {:error, response}

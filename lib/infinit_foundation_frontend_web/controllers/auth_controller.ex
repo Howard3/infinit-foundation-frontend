@@ -1,5 +1,6 @@
 defmodule InfinitFoundationFrontendWeb.AuthController do
   use InfinitFoundationFrontendWeb, :controller
+  alias InfinitFoundationFrontend.Events
   alias InfinitFoundationFrontend.Posthog
   require Logger
 
@@ -16,13 +17,8 @@ defmodule InfinitFoundationFrontendWeb.AuthController do
     with session_token when is_binary(session_token) <- conn.cookies["__session"],
          {:ok, claims} <- InfinitFoundationFrontend.Guardian.decode_and_verify(session_token),
          {:ok, _resource} <- InfinitFoundationFrontend.Guardian.resource_from_claims(claims) do
-
-      Posthog.capture("User Signed In",
-        user_id: claims["sub"],
-        properties: %{
-          auth_method: "clerk"
-        }
-      )
+      Events.SignedIn.new(claims["sub"])
+      |> Events.Handler.handle()
 
       conn
       |> put_session(:user_id, claims["sub"])
@@ -30,6 +26,7 @@ defmodule InfinitFoundationFrontendWeb.AuthController do
     else
       error ->
         Logger.error("Auth error: #{inspect(error)}")
+
         conn
         |> put_flash(:error, "Authentication failed")
         |> redirect(to: "/sign-in")
@@ -40,6 +37,7 @@ defmodule InfinitFoundationFrontendWeb.AuthController do
     Posthog.capture("User Signed Out",
       user_id: get_session(conn, "user_id")
     )
+
     conn
     |> clear_session()
     |> redirect(to: "/")

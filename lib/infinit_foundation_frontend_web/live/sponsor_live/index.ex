@@ -9,14 +9,23 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
   @impl true
   def mount(%{"id" => student_id}, session, socket) do
     user_id = session["user_id"]
+
     Posthog.capture("Started Sponsorship Process",
       user_id: user_id,
       properties: %{
         student_id: student_id
       }
     )
+
     socket = assign(socket, :user_id, user_id)
-    socket = assign(socket, :stripe_public_key, Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key])
+
+    socket =
+      assign(
+        socket,
+        :stripe_public_key,
+        Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key]
+      )
+
     socket = assign(socket, :setup_intent, nil)
 
     {:ok, checkout_result} = prepare_checkout(student_id, user_id)
@@ -39,7 +48,8 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
            student: student,
            sponsorship: sponsorship,
            page_title: "Complete Sponsorship",
-           stripe_public_key: Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key],
+           stripe_public_key:
+             Application.get_env(:infinit_foundation_frontend, :stripe)[:public_key],
            payment_intent_id: checkout_result.payment_intent_id,
            client_secret: checkout_result.client_secret,
            remaining_minutes: remaining_minutes
@@ -71,18 +81,20 @@ defmodule InfinitFoundationFrontendWeb.SponsorLive.Index do
         student_id: student_id
       }
     )
+
     Logger.info("Preparing checkout for student #{student_id} with user #{user_id}")
-    {:ok, payment_intent} = Stripe.PaymentIntent.create(%{
-      amount: Sponsorship.amount_in_cents(),
-      currency: Sponsorship.currency,
-      payment_method_types: ["card"],
-      metadata: %{
-        student_id: student_id,
-        sponsor_id: user_id
-      }
-    })
+
+    {:ok, payment_intent} =
+      Stripe.PaymentIntent.create(%{
+        amount: Sponsorship.amount_in_cents(),
+        currency: Sponsorship.currency(),
+        payment_method_types: ["card"],
+        metadata: %{
+          student_id: student_id,
+          sponsor_id: user_id
+        }
+      })
 
     {:ok, %{payment_intent_id: payment_intent.id, client_secret: payment_intent.client_secret}}
   end
-
 end

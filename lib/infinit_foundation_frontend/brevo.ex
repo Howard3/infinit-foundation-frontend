@@ -35,6 +35,38 @@ defmodule InfinitFoundationFrontend.Brevo do
     end
   end
 
+  def send_event(email, event, event_data)
+      when is_binary(email) and is_binary(event) and is_map(event_data) do
+    headers = [
+      {"Content-Type", "application/json"},
+      {"accept", "application/json"},
+      {"api-key", get_api_key()}
+    ]
+
+    if email == "" or event == "" do
+      raise {:error, "Email and event are required"}
+    end
+
+    body = %{
+      event_name: event,
+      event_properties: event_data,
+      identifiers: %{
+        email_id: email
+      }
+    }
+
+    case(Req.post(@api_host <> "/events", json: body, headers: headers)) do
+      {:ok, %{status: 204, body: body}} ->
+        {:ok, body}
+
+      {:ok, %{status: status, body: body}} ->
+        {:error, %{status: status, body: body}}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
   def create_contact(email, attributes \\ %{FIRSTNAME: "", LASTNAME: ""}, list_ids \\ []) do
     headers = [
       {"Content-Type", "application/json"},
