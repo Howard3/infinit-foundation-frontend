@@ -35,18 +35,31 @@
     </div>
   </div>
 
-  <div class="relative bg-white py-24 sm:py-32 border-y border-gray-100">
+  <div class="relative bg-red-50 py-12 sm:py-16">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
-      <dl class="grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-2">
-        <div class="mx-auto flex max-w-xs flex-col gap-y-4">
-          <dt class="text-base leading-7 text-gray-600">Children Fed Daily</dt>
-          <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+      <div class="mx-auto max-w-3xl text-center">
+        <h2 class="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
+          <span class="text-red-600">1 in 3 Filipino children</span> are stunted or malnourished
+        </h2>
+        <p class="mt-4 text-lg leading-8 text-gray-600">
+          Join us in our mission to allow malnourished children realize their full potential through providing a daily nutritious and healthy lunch meals with vitamins at school
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <div class="relative bg-white py-16 sm:py-20 border-y border-gray-100">
+    <div class="mx-auto max-w-4xl px-6 lg:px-8">
+      <dl class="grid grid-cols-1 gap-x-6 gap-y-12 text-center sm:grid-cols-2">
+        <div class="flex flex-col gap-y-3">
+          <dt class="text-sm font-medium leading-6 text-gray-600 uppercase tracking-wide">Children Fed Daily</dt>
+          <dd class="order-first text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
             <span data-counter data-target="500">0</span>+
           </dd>
         </div>
-        <div class="mx-auto flex max-w-xs flex-col gap-y-4">
-          <dt class="text-base leading-7 text-gray-600">Meals Served</dt>
-          <dd class="order-first text-3xl font-semibold tracking-tight text-gray-900 sm:text-5xl">
+        <div class="flex flex-col gap-y-3">
+          <dt class="text-sm font-medium leading-6 text-gray-600 uppercase tracking-wide">Meals Served</dt>
+          <dd class="order-first text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
             &gt; <span data-counter data-target="32500">0</span>
           </dd>
         </div>
@@ -54,13 +67,15 @@
     </div>
   </div>
 
+
+
   <div id="mission" class="relative bg-white py-24 sm:py-32 overflow-hidden">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-16">
         <div>
           <h2 class="text-base font-semibold leading-7 text-red-600">Our Mission</h2>
           <p class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Technology-Enabled Feeding Program
+          High Impact Feeding Program
           </p>
           <p class="mt-6 text-lg leading-8 text-gray-600">
             Infinit-O Foundation operates as a technology-enabled feeding program that connects generous donors with children in need through a transparent, efficient, and sustainable system.
@@ -69,27 +84,27 @@
             <p class="text-base leading-7 text-gray-600">
               We partner with local schools and communities to:
             </p>
-            <ul class="mt-4 space-y-4">
-              <li class="flex items-center gap-3">
-                <.icon name="hero-check-circle-solid" class="h-5 w-5 text-red-600" />
-                <span class="text-gray-600">Identify children who are malnourished</span>
+            <ul class="mt-4 space-y-5">
+              <li class="flex items-start gap-4">
+                <.icon name="hero-check-circle-solid" class="h-6 w-6 text-red-600 flex-shrink-0 mt-0.5" />
+                <span class="text-gray-600 leading-relaxed">Identify children who are malnourished</span>
               </li>
-              <li class="flex items-center gap-3">
-                <.icon name="hero-check-circle-solid" class="h-5 w-5 text-red-600" />
-                <span class="text-gray-600">
+              <li class="flex items-start gap-4">
+                <.icon name="hero-check-circle-solid" class="h-6 w-6 text-red-600 flex-shrink-0 mt-0.5" />
+                <span class="text-gray-600 leading-relaxed">
                   Provide nutritious daily meals and vitamin supplements
                 </span>
               </li>
-              <li class="flex items-center gap-3">
-                <.icon name="hero-check-circle-solid" class="h-5 w-5 text-red-600" />
-                <span class="text-gray-600">Real-time feedback on progress and results</span>
+              <li class="flex items-start gap-4">
+                <.icon name="hero-check-circle-solid" class="h-6 w-6 text-red-600 flex-shrink-0 mt-0.5" />
+                <span class="text-gray-600 leading-relaxed">Real-time feedback on progress and results including nutritional status and academic performance</span>
               </li>
             </ul>
           </div>
         </div>
         <div class="relative hidden lg:block">
           <img
-            src="https://images.unsplash.com/photo-1509059852496-f3822ae057bf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2345&q=80"
+            src={~p"/images/children_sharing_meal.jpg"}
             alt="Children sharing a meal"
             class="rounded-2xl object-cover h-full w-full"
           />
