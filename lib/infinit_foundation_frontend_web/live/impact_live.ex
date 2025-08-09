@@ -5,7 +5,7 @@ defmodule InfinitFoundationFrontendWeb.ImpactLive do
   def mount(_params, _session, socket) do
     metrics = [
       %{
-        number: "250+",
+        number: "700+",
         label: "Daily Meals Served",
         description: "Nutritious meals provided to children every school day"
       },
