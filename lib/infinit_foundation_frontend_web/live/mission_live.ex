@@ -41,13 +41,13 @@ defmodule InfinitFoundationFrontendWeb.MissionLive do
       },
       %{
         year: "2024",
-        title: "Program Expansion",
-        description: "Expanded to 250 children and implemented our digital tracking system."
+        title: "Program Development",
+        description: "Launched Technology tracking system and scaled to 250 children."
       },
       %{
         year: "2025",
-        title: "Technology Integration",
-        description: "Launched our sponsor portal and real-time monitoring system."
+        title: "Program Scaling",
+        description: "Launched technology platform, 2nd school and scaled to 750 children."
       },
     ]
 
