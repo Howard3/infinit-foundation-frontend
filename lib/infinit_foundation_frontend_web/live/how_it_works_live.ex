@@ -12,7 +12,7 @@ defmodule InfinitFoundationFrontendWeb.HowItWorksLive do
       %{
         icon: "hero-currency-dollar-solid",
         title: "Make a Commitment",
-        description: "Sponsor a child for $250 per year. This covers their daily meals and vitamin supplements, ensuring they have the nutrition they need to focus on their education."
+        description: "Sponsor a child for $200 per year. This covers their daily meals and vitamin supplements, ensuring they have the nutrition they need to focus on their education."
       },
       %{
         icon: "hero-academic-cap-solid",
@@ -23,21 +23,6 @@ defmodule InfinitFoundationFrontendWeb.HowItWorksLive do
         icon: "hero-envelope-solid",
         title: "Stay Connected",
         description: "Receive updates about your sponsored child's progress, including their academic achievements and well-being reports."
-      }
-    ]
-
-    impact_stats = [
-      %{
-        number: "94%",
-        description: "Improvement in school attendance"
-      },
-      %{
-        number: "85%",
-        description: "Better academic performance"
-      },
-      %{
-        number: "100%",
-        description: "Of your donation goes to feeding children"
       }
     ]
 
@@ -59,8 +44,8 @@ defmodule InfinitFoundationFrontendWeb.HowItWorksLive do
       },
       %{
         icon: "hero-chart-bar-solid",
-        title: "Quarterly Health Monitoring",
-        description: "Every three months, we track each child's BMI and overall health indicators to ensure our program is making a real difference."
+        title: "Regular Health Monitoring",
+        description: "Every semester, we track each child's BMI and overall health indicators to ensure our program is making a real difference."
       },
       %{
         icon: "hero-academic-cap-solid",
@@ -70,13 +55,12 @@ defmodule InfinitFoundationFrontendWeb.HowItWorksLive do
       %{
         icon: "hero-document-text-solid",
         title: "Regular Reports",
-        description: "Sponsors receive quarterly updates on their child's health metrics, academic progress, and overall well-being."
+        description: "Sponsors receive regular updates on their child's health metrics, academic progress, and overall well-being."
       }
     ]
 
     {:ok, assign(socket,
       steps: steps,
-      impact_stats: impact_stats,
       commitments: commitments
     )}
   end
