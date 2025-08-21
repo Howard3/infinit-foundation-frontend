@@ -27,7 +27,9 @@ defmodule InfinitFoundationFrontendWeb.ClerkController do
       {:ok, _} ->
         Logger.info("Contact created successfully")
         send_resp(conn, 200, "User created")
-
+      {:error, %{status: 400, body: %{"code" => "duplicate_parameter", "message" => _message, "metadata" => %{"duplicate_identifiers" => ["email"]}}}} ->
+        Logger.info("Contact already exists, skipping creation")
+        send_resp(conn, 200, "User created")
       {:error, error} ->
         Logger.error("Failed to create contact: #{inspect(error)}")
         send_resp(conn, 500, "Failed to create contact")
