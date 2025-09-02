@@ -21,7 +21,7 @@ defmodule InfinitFoundationFrontendWeb.ImpactLive do
       },
       %{
         number: "75%",
-        label: "Reduction in manourishment",
+        label: "Reduction in malourishment",
         description: "Reduction in manourishment among children"
       }
     ]
