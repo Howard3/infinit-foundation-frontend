@@ -3,7 +3,7 @@ defmodule InfinitFoundationFrontend.Config.Sponsorship do
   Central configuration for sponsorship details
   """
 
-  def amount, do: 200
+  def amount, do: 150
   def currency, do: "USD"
   def formatted_amount, do: "$#{amount()}"
 
