@@ -1,0 +1,62 @@
+<div class="min-h-[50vh] bg-white">
+  <div class="mx-auto max-w-3xl px-4 py-16 sm:px-6 sm:py-24 lg:px-8">
+    <div class="text-center">
+      <span class="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-8">
+        <.icon name="hero-check-solid" class="w-10 h-10 text-green-600" />
+      </span>
+      <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
+        Thank You!
+      </h1>
+      <p class="mt-3 text-lg text-gray-600">
+        Your generous donation of <strong>{"$#{trunc(@amount)}"}</strong>
+        will help provide nutritious meals for students in need.
+      </p>
+      <p class="mt-2 text-sm text-gray-500">A receipt has been sent to your email address.</p>
+
+      <div class="mt-10 bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 text-left max-w-md mx-auto">
+        <h3 class="text-sm font-semibold text-gray-900 mb-3">What happens next</h3>
+        <ul class="space-y-3">
+          <li class="flex items-start gap-3">
+            <span class="flex-shrink-0 h-6 w-6 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600">
+              1
+            </span>
+            <p class="text-sm text-gray-600">
+              Your donation is distributed across our partner schools to fund student meal programs.
+            </p>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="flex-shrink-0 h-6 w-6 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600">
+              2
+            </span>
+            <p class="text-sm text-gray-600">
+              Students receive daily nutritious meals, supporting their health and education.
+            </p>
+          </li>
+          <li class="flex items-start gap-3">
+            <span class="flex-shrink-0 h-6 w-6 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600">
+              3
+            </span>
+            <p class="text-sm text-gray-600">
+              Track the collective impact of donations on your dashboard.
+            </p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <a
+          href="/dashboard"
+          class="rounded-lg bg-red-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-red-500 transition-colors"
+        >
+          Go to Dashboard
+        </a>
+        <a
+          href="/students"
+          class="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors"
+        >
+          Sponsor a Specific Child
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

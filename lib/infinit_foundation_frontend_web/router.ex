@@ -34,6 +34,7 @@ defmodule InfinitFoundationFrontendWeb.Router do
     live "/mission", MissionLive, :index
     live "/impact", ImpactLive, :index
     live "/students", StudentLive.Index, :index
+    live "/donate", DonateLive, :index
 
     # Add this new route to handle image proxying
     get "/student/profile/photo/*path", ImageController, :proxy_photo
@@ -50,6 +51,7 @@ defmodule InfinitFoundationFrontendWeb.Router do
 
     live "/sponsor/:id", SponsorLive.Index
     get "/sponsorships/success", SponsorshipController, :success
+    get "/donations/success", DonationController, :success
     live "/dashboard", DashboardLive, :index
   end
 

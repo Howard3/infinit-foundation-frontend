@@ -154,6 +154,69 @@ const Hooks = {
     }
   },
 
+  StripeDonationForm: {
+    async mounted() {
+      const clientSecret = this.el.dataset.clientSecret;
+      let elements;
+
+      await loadScript('https://js.stripe.com/v3/');
+
+      if (window.stripeDonationConfig === undefined) {
+        const stripe = Stripe(this.el.dataset.stripeKey);
+        elements = stripe.elements({clientSecret: this.el.dataset.clientSecret});
+        const addressElement = elements.create("address", {
+          mode: "billing",
+          fields: {
+            country: "US"
+          }
+        });
+        const cardElement = elements.create("payment", {
+          layout: "accordion",
+          defaultCollapsed: true,
+          radios: true,
+          spacedAccordionItems: false
+        });
+        window.stripeDonationConfig = { stripe, elements, addressElement, cardElement };
+      }
+
+      const paymentErrors = document.getElementById("donation-payment-errors");
+      const form = document.getElementById("donation-payment-form");
+
+      window.stripeDonationConfig.addressElement.mount("#donation-address-element");
+      window.stripeDonationConfig.cardElement.mount("#donation-payment-element");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!window.stripeDonationConfig.stripe) {
+          console.error("Stripe is not loaded");
+          return;
+        }
+
+        const {error: submitError} = await elements.submit();
+        if (submitError) {
+          paymentErrors.textContent = submitError.message;
+          return;
+        }
+
+        const billingDetails = await window.stripeDonationConfig.addressElement.getValue();
+
+        const { payment, error } = await window.stripeDonationConfig.stripe.confirmPayment({
+          elements,
+          clientSecret,
+          confirmParams: {
+            return_url: window.location.origin + "/donations/success?payment_intent_id=" + this.el.dataset.paymentIntentId
+          },
+        });
+
+        if (error) {
+          paymentErrors.textContent = error.message;
+          return;
+        }
+      });
+    }
+  },
+
   CountdownTimer: {
     mounted() {
       const minutes = parseInt(this.el.dataset.minutes);
@@ -388,6 +451,151 @@ const Hooks = {
         modal.classList.add('hidden');
         document.body.style.overflow = '';
       });
+    }
+  },
+
+  NutritionalChart: {
+    mounted() {
+      this.initChart();
+    },
+
+    updated() {
+      // Destroy and recreate chart on updates
+      if (this.chart) {
+        this.chart.destroy();
+      }
+      this.initChart();
+    },
+
+    destroyed() {
+      if (this.chart) {
+        this.chart.destroy();
+      }
+    },
+
+    initChart() {
+      const canvas = this.el;
+      const ctx = canvas.getContext('2d');
+
+      // Data Definition
+      const dataPoints = [
+        { period: "Jul-24", Normal: 21, Wasted: 5, "Severely Wasted": 74 },
+        { period: "Apr-25", Normal: 67, Wasted: 15, "Severely Wasted": 18 }
+      ];
+
+      // Infinit-O Brand Colors
+      const colors = {
+        severelyWasted: '#cb2129',
+        wasted: '#F59E0B',
+        normal: '#04785e',
+        black: '#343433'
+      };
+
+      const chartData = {
+        labels: dataPoints.map(d => d.period),
+        datasets: [
+          {
+            label: 'Severely Wasted',
+            data: dataPoints.map(d => d['Severely Wasted']),
+            backgroundColor: colors.severelyWasted,
+            borderRadius: 4,
+          },
+          {
+            label: 'Wasted',
+            data: dataPoints.map(d => d.Wasted),
+            backgroundColor: colors.wasted,
+            borderRadius: 4,
+          },
+          {
+            label: 'Normal',
+            data: dataPoints.map(d => d.Normal),
+            backgroundColor: colors.normal,
+            borderRadius: 4,
+          }
+        ].reverse(),
+      };
+
+      const config = {
+        type: 'bar',
+        data: chartData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          layout: {
+            padding: {
+              top: 25
+            }
+          },
+          plugins: {
+            legend: {
+              labels: {
+                font: { size: 14, family: 'Roboto' },
+                color: colors.black,
+                boxWidth: 12,
+                boxHeight: 12,
+                usePointStyle: true,
+                padding: 20,
+              },
+              position: 'bottom',
+            },
+            tooltip: {
+              callbacks: {
+                label: (context) => {
+                  let label = context.dataset.label || '';
+                  if (label) label += ': ';
+                  if (context.parsed.y !== null) label += `${context.parsed.y}%`;
+                  return label;
+                }
+              }
+            },
+            datalabels: {
+              formatter: (value) => value > 0 ? value + '%' : '',
+              color: (context) => {
+                const colorKey = context.dataset.label.toLowerCase().replace(' ', '');
+                return (colorKey === 'wasted') ? colors.black : '#FFFFFF';
+              },
+              font: {
+                weight: 'bold',
+                family: 'Roboto',
+                size: 14,
+              },
+              anchor: 'center',
+              align: 'center',
+            }
+          },
+          scales: {
+            x: {
+              stacked: true,
+              grid: { display: false },
+              border: { display: false },
+              ticks: {
+                font: { size: 16, weight: 'bold', family: 'Roboto' },
+                color: colors.black,
+              }
+            },
+            y: {
+              stacked: true,
+              max: 100,
+              grid: { display: false },
+              border: { display: false },
+              title: {
+                display: true,
+                text: 'Percentage of Children',
+                font: { size: 14, family: 'Roboto' },
+                color: colors.black
+              },
+              ticks: {
+                callback: (value) => `${value}%`,
+                font: { size: 12, family: 'Roboto' },
+                color: colors.black,
+              }
+            }
+          }
+        },
+        plugins: [ChartDataLabels]
+      };
+
+      this.chart = new Chart(ctx, config);
     }
   }
 }

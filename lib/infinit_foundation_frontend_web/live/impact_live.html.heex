@@ -12,6 +12,25 @@
     </div>
   </div>
 
+  <style>
+    /* Applying Infinit-O Primary Typeface globally */
+    body {
+        font-family: 'Roboto', sans-serif;
+    }
+    .chart-card {
+        width: 100%;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    /* CRITICAL FIX: The canvas must be inside a relative container with a set height
+       to prevents the "infinite growth" loop. */
+    .canvas-container {
+        position: relative;
+        height: 400px;
+        width: 100%;
+    }
+  </style>
+
   <div class="py-24 sm:py-32">
     <div class="mx-auto max-w-7xl px-6 lg:px-8">
       <div class="mx-auto max-w-2xl lg:text-center">
@@ -24,7 +43,7 @@
         </p>
       </div>
 
-      <dl class="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-4">
+      <dl class="mt-16 grid grid-cols-1 gap-x-8 gap-y-16 text-center lg:grid-cols-3">
         <%= for metric <- @metrics do %>
           <div class="mx-auto flex max-w-xs flex-col gap-y-4">
             <dt class="text-base leading-7 text-gray-600">{metric.label}</dt>
@@ -35,6 +54,20 @@
           </div>
         <% end %>
       </dl>
+    </div>
+  </div>
+
+  <div class="chart-card bg-white rounded-lg p-6 mb-16">
+    <h1 class="text-xl sm:text-2xl font-bold text-gray-800 text-center mb-1">
+      Child Nutritional Status
+    </h1>
+    <p class="text-md font-medium text-gray-500 text-center mb-6">
+      School Year 2024-2025 (N=249)
+    </p>
+    
+<!-- Wrapper to control height and prevent growing -->
+    <div class="canvas-container">
+      <canvas id="stackedBarChart" phx-hook="NutritionalChart"></canvas>
     </div>
   </div>
 

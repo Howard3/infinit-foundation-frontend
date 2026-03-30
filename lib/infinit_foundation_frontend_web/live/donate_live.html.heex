@@ -1,0 +1,195 @@
+<!-- Hero Section -->
+<div class="bg-gradient-to-br from-gray-50 to-white">
+  <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 text-center">
+    <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+      Make a General Donation
+    </h1>
+    <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+      Your donation supports nutrition programs for all students in need. Every dollar helps provide meals for children across our partner schools.
+    </p>
+    <div class="mt-6 flex items-center justify-center gap-6 text-sm text-gray-500">
+      <span class="flex items-center gap-1.5">
+        <.icon name="hero-check-circle-solid" class="h-5 w-5 text-green-500" />
+        Tax-deductible
+      </span>
+      <span class="flex items-center gap-1.5">
+        <.icon name="hero-check-circle-solid" class="h-5 w-5 text-green-500" />
+        100% goes to students
+      </span>
+      <span class="flex items-center gap-1.5">
+        <.icon name="hero-check-circle-solid" class="h-5 w-5 text-green-500" />
+        Secured by Stripe
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Donation Form -->
+<div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pb-20 -mt-4">
+  <!-- Step 1: Amount Selection -->
+  <div :if={@step == :amount} class="space-y-8">
+    <!-- Amount Card -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl overflow-hidden">
+      <div class="p-6 sm:p-8">
+        <h2 class="text-lg font-semibold text-gray-900 mb-1">Choose your donation amount</h2>
+        <p class="text-sm text-gray-500 mb-6">Select a preset amount or enter a custom one</p>
+
+        <!-- Preset Amounts -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+          <button
+            :for={amount <- @preset_amounts}
+            phx-click="select_amount"
+            phx-value-amount={amount}
+            class={[
+              "rounded-lg border-2 px-4 py-4 text-center font-semibold transition-all",
+              if(@selected_amount == amount and is_nil(@custom_amount),
+                do: "border-red-600 bg-red-600 text-white",
+                else: "border-gray-200 text-gray-700 hover:border-red-300 hover:bg-red-50"
+              )
+            ]}
+          >
+            <span class="text-2xl">{format_amount(amount)}</span>
+          </button>
+        </div>
+
+        <!-- Custom Amount -->
+        <div class="relative">
+          <label for="custom-amount" class="block text-sm font-medium text-gray-700 mb-2">
+            Or enter a custom amount
+          </label>
+          <div class="relative rounded-lg">
+            <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+              <span class="text-gray-500 text-lg font-medium">$</span>
+            </div>
+            <form phx-change="custom_amount">
+              <input
+                type="number"
+                name="amount"
+                id="custom-amount"
+                min="1"
+                placeholder="Other amount"
+                value={@custom_amount}
+                phx-debounce="300"
+                class="block w-full rounded-lg border-2 border-gray-200 pl-8 pr-4 py-3 text-lg focus:border-red-500 focus:ring-red-500 placeholder:text-gray-300"
+              />
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Impact Summary -->
+    <div class="bg-red-50 border border-red-100 rounded-xl p-6">
+      <div class="flex items-start gap-4">
+        <div class="flex-shrink-0 h-12 w-12 bg-red-100 rounded-full flex items-center justify-center">
+          <.icon name="hero-heart-solid" class="h-6 w-6 text-red-600" />
+        </div>
+        <div>
+          <h3 class="font-semibold text-gray-900">
+            Your impact with {format_amount(@selected_amount)}
+          </h3>
+          <p class="mt-1 text-sm text-gray-600">
+            {impact_description(@selected_amount)}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Where It Goes -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6">
+      <h3 class="text-base font-semibold text-gray-900 mb-4">Where your donation goes</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div class="text-center p-4 rounded-lg bg-gray-50">
+          <div class="text-3xl mb-2">&#127858;</div>
+          <p class="text-sm font-medium text-gray-900">Daily Meals</p>
+          <p class="text-xs text-gray-500 mt-1">Nutritious meals served at school every day</p>
+        </div>
+        <div class="text-center p-4 rounded-lg bg-gray-50">
+          <div class="text-3xl mb-2">&#128138;</div>
+          <p class="text-sm font-medium text-gray-900">Vitamins</p>
+          <p class="text-xs text-gray-500 mt-1">
+            Daily vitamins to support each child's nutrition and growth
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Proceed Button -->
+    <button
+      phx-click="proceed_to_checkout"
+      class="w-full rounded-lg bg-red-600 px-6 py-4 text-base font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 transition-colors"
+    >
+      Continue to Payment
+    </button>
+
+    <!-- Alternative CTA -->
+    <p class="text-center text-sm text-gray-500">
+      Want to sponsor a specific child instead?
+      <a href={~p"/students"} class="text-red-600 hover:text-red-500 font-medium">
+        Browse students
+      </a>
+    </p>
+  </div>
+
+  <!-- Step 2: Payment -->
+  <div :if={@step == :checkout} class="space-y-6">
+    <!-- Back Button -->
+    <button
+      phx-click="back_to_amount"
+      class="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+    >
+      <.icon name="hero-chevron-left-mini" class="h-4 w-4" /> Change amount
+    </button>
+
+    <!-- Order Summary -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
+      <div class="p-6">
+        <div class="flex items-center justify-between">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">General Donation</h3>
+            <p class="mt-1 text-sm text-gray-600">
+              Supports nutrition programs for all students in need
+            </p>
+          </div>
+          <p class="text-2xl font-bold text-gray-900">{format_amount(@selected_amount)}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stripe Payment Form -->
+    <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6">
+      <div
+        class="text-center"
+        id="stripe-donation-form"
+        phx-hook="StripeDonationForm"
+        data-stripe-key={@stripe_public_key}
+        data-client-secret={@client_secret}
+        data-payment-intent-id={@payment_intent_id}
+      >
+        <form id="donation-payment-form">
+          <div>
+            <h3 class="text-sm font-medium text-gray-700 mb-2 text-left">Billing Address</h3>
+            <div id="donation-address-element" class="mb-4 rounded-lg border border-gray-300 p-4 shadow-sm">
+            </div>
+          </div>
+          <div>
+            <h3 class="text-sm font-medium text-gray-700 mb-2 text-left">Payment Details</h3>
+            <div id="donation-payment-element" class="rounded-lg border border-gray-300 p-4 shadow-sm">
+            </div>
+          </div>
+          <button
+            type="submit"
+            class="mt-4 w-full rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
+          >
+            Submit Payment
+          </button>
+          <div class="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-500">
+            <.icon name="hero-lock-closed-mini" class="h-4 w-4" />
+            <span>Secured by Stripe</span>
+          </div>
+        </form>
+        <div id="donation-payment-errors" class="text-red-500"></div>
+      </div>
+    </div>
+  </div>
+</div>
