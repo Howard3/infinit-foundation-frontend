@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en" class="[scrollbar-gutter:stable]">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Donate · Infinit Foundation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter', 'system-ui', 'sans-serif'] }
+        }
+      }
+    }
+  </script>
+  <style>
+    .amount-btn.selected {
+      background-color: #dc2626;
+      color: white;
+      border-color: #dc2626;
+    }
+    .step-indicator.active {
+      background-color: #dc2626;
+      color: white;
+    }
+    .step-indicator.completed {
+      background-color: #16a34a;
+      color: white;
+    }
+  </style>
+</head>
+<body class="bg-white min-h-screen flex flex-col">
+
+  <!-- Header -->
+  <header class="px-4 sm:px-6 lg:px-8 sticky top-0 bg-gray-900 shadow-lg backdrop-blur z-50">
+    <div class="flex items-center justify-between border-b border-gray-800 py-3">
+      <div class="flex items-center gap-4">
+        <a href="#" class="flex items-center gap-3">
+          <div class="h-10 w-10 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-lg">iF</div>
+          <span class="text-lg font-semibold text-white">Infinit-O Foundation</span>
+        </a>
+      </div>
+      <div class="hidden lg:flex items-center gap-6 font-semibold leading-6">
+        <nav class="flex items-center gap-4">
+          <a href="#" class="text-sm text-gray-300 hover:text-white">Our Mission</a>
+          <a href="#" class="text-sm text-gray-300 hover:text-white">Impact</a>
+          <a href="#" class="text-sm text-gray-300 hover:text-white">How It Works</a>
+          <a href="#" class="text-sm text-gray-300 hover:text-white">Dashboard</a>
+        </nav>
+        <div class="flex items-center gap-4">
+          <a href="#" class="text-sm text-white hover:text-gray-300 border border-gray-700 rounded-lg px-4 py-2 hover:bg-gray-800">Sign in</a>
+          <a href="#" class="rounded-lg bg-red-600 px-4 py-2 text-sm font-semibold text-white hover:bg-red-500">Sponsor a Child</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1">
+
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-br from-gray-50 to-white">
+      <div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-16 text-center">
+        <h1 class="text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
+          Make a General Donation
+        </h1>
+        <p class="mt-4 text-lg text-gray-600 max-w-2xl mx-auto">
+          Your donation supports nutrition programs for all students in need. Every dollar helps provide meals for children across our partner schools.
+        </p>
+        <div class="mt-6 flex items-center justify-center gap-6 text-sm text-gray-500">
+          <span class="flex items-center gap-1.5">
+            <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Tax-deductible
+          </span>
+          <span class="flex items-center gap-1.5">
+            <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            100% goes to students
+          </span>
+          <span class="flex items-center gap-1.5">
+            <svg class="h-5 w-5 text-green-500" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            Secured by Stripe
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Donation Form -->
+    <div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pb-20 -mt-4">
+
+      <!-- Step 1: Amount Selection (visible by default) -->
+      <div id="step-amount" class="space-y-8">
+
+        <!-- Amount Card -->
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl overflow-hidden">
+          <div class="p-6 sm:p-8">
+            <h2 class="text-lg font-semibold text-gray-900 mb-1">Choose your donation amount</h2>
+            <p class="text-sm text-gray-500 mb-6">Select a preset amount or enter a custom one</p>
+
+            <!-- Preset Amounts -->
+            <div class="grid grid-cols-3 gap-3 mb-6">
+              <button onclick="selectAmount(150, this)" class="amount-btn selected rounded-lg border-2 border-gray-200 px-4 py-4 text-center font-semibold text-gray-700 hover:border-red-300 hover:bg-red-50 transition-all">
+                <span class="text-2xl">$150</span>
+              </button>
+              <button onclick="selectAmount(250, this)" class="amount-btn rounded-lg border-2 border-gray-200 px-4 py-4 text-center font-semibold text-gray-700 hover:border-red-300 hover:bg-red-50 transition-all">
+                <span class="text-2xl">$250</span>
+              </button>
+              <button onclick="selectAmount(500, this)" class="amount-btn rounded-lg border-2 border-gray-200 px-4 py-4 text-center font-semibold text-gray-700 hover:border-red-300 hover:bg-red-50 transition-all">
+                <span class="text-2xl">$500</span>
+              </button>
+              <button onclick="selectAmount(750, this)" class="amount-btn rounded-lg border-2 border-gray-200 px-4 py-4 text-center font-semibold text-gray-700 hover:border-red-300 hover:bg-red-50 transition-all">
+                <span class="text-2xl">$750</span>
+              </button>
+              <button onclick="selectAmount(1000, this)" class="amount-btn rounded-lg border-2 border-gray-200 px-4 py-4 text-center font-semibold text-gray-700 hover:border-red-300 hover:bg-red-50 transition-all">
+                <span class="text-2xl">$1,000</span>
+              </button>
+              <button onclick="selectAmount(2500, this)" class="amount-btn rounded-lg border-2 border-gray-200 px-4 py-4 text-center font-semibold text-gray-700 hover:border-red-300 hover:bg-red-50 transition-all">
+                <span class="text-2xl">$2,500</span>
+              </button>
+            </div>
+
+            <!-- Custom Amount -->
+            <div class="relative">
+              <label for="custom-amount" class="block text-sm font-medium text-gray-700 mb-2">Or enter a custom amount</label>
+              <div class="relative rounded-lg">
+                <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4">
+                  <span class="text-gray-500 text-lg font-medium">$</span>
+                </div>
+                <input
+                  type="number"
+                  id="custom-amount"
+                  min="1"
+                  placeholder="Other amount"
+                  oninput="customAmount(this)"
+                  class="block w-full rounded-lg border-2 border-gray-200 pl-8 pr-4 py-3 text-lg focus:border-red-500 focus:ring-red-500 placeholder:text-gray-300"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Impact Summary -->
+        <div class="bg-red-50 border border-red-100 rounded-xl p-6">
+          <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 h-12 w-12 bg-red-100 rounded-full flex items-center justify-center">
+              <svg class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-gray-900">Your impact with <span id="impact-amount">$150</span></h3>
+              <p class="mt-1 text-sm text-gray-600" id="impact-description">
+                This provides approximately 150 nutritious meals for students across our partner schools, supporting their health and ability to focus in the classroom.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Where It Goes -->
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6">
+          <h3 class="text-base font-semibold text-gray-900 mb-4">Where your donation goes</h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="text-center p-4 rounded-lg bg-gray-50">
+              <div class="text-3xl mb-2">&#127858;</div>
+              <p class="text-sm font-medium text-gray-900">Daily Meals</p>
+              <p class="text-xs text-gray-500 mt-1">Nutritious meals served at school every day</p>
+            </div>
+            <div class="text-center p-4 rounded-lg bg-gray-50">
+              <div class="text-3xl mb-2">&#128138;</div>
+              <p class="text-sm font-medium text-gray-900">Vitamins</p>
+              <p class="text-xs text-gray-500 mt-1">Daily vitamins to support each child's nutrition and growth</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Proceed Button -->
+        <button
+          onclick="showCheckout()"
+          class="w-full rounded-lg bg-red-600 px-6 py-4 text-base font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 transition-colors"
+        >
+          Continue to Payment
+        </button>
+
+        <!-- Alternative CTA -->
+        <p class="text-center text-sm text-gray-500">
+          Want to sponsor a specific child instead?
+          <a href="#" class="text-red-600 hover:text-red-500 font-medium">Browse students</a>
+        </p>
+      </div>
+
+      <!-- Step 2: Payment (hidden by default) -->
+      <div id="step-payment" class="space-y-6 hidden">
+
+        <!-- Back Button -->
+        <button onclick="showAmountStep()" class="flex items-center gap-1 text-sm text-gray-500 hover:text-gray-700 transition-colors">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" /></svg>
+          Change amount
+        </button>
+
+        <!-- Order Summary -->
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl">
+          <div class="p-6">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900">General Donation</h3>
+                <p class="mt-1 text-sm text-gray-600">Supports nutrition programs for all students in need</p>
+              </div>
+              <p class="text-2xl font-bold text-gray-900" id="checkout-amount">$150</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Simulated Stripe Form -->
+        <div class="bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6">
+          <div>
+            <h3 class="text-sm font-medium text-gray-700 mb-2">Billing Address</h3>
+            <div class="mb-4 rounded-lg border border-gray-300 p-4 shadow-sm space-y-3">
+              <input type="text" placeholder="Full name" class="block w-full rounded-md border-gray-300 text-sm focus:border-red-500 focus:ring-red-500" />
+              <input type="text" placeholder="Address line 1" class="block w-full rounded-md border-gray-300 text-sm focus:border-red-500 focus:ring-red-500" />
+              <input type="text" placeholder="Address line 2 (optional)" class="block w-full rounded-md border-gray-300 text-sm focus:border-red-500 focus:ring-red-500" />
+              <div class="grid grid-cols-3 gap-3">
+                <input type="text" placeholder="City" class="block w-full rounded-md border-gray-300 text-sm focus:border-red-500 focus:ring-red-500" />
+                <input type="text" placeholder="State" class="block w-full rounded-md border-gray-300 text-sm focus:border-red-500 focus:ring-red-500" />
+                <input type="text" placeholder="ZIP" class="block w-full rounded-md border-gray-300 text-sm focus:border-red-500 focus:ring-red-500" />
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-sm font-medium text-gray-700 mb-2">Payment Details</h3>
+            <div class="rounded-lg border border-gray-300 p-4 shadow-sm space-y-3">
+              <input type="text" placeholder="Card number" value="4242 4242 4242 4242" class="block w-full rounded-md border-gray-300 text-sm focus:border-red-500 focus:ring-red-500" />
+              <div class="grid grid-cols-2 gap-3">
+                <input type="text" placeholder="MM / YY" value="12 / 28" class="block w-full rounded-md border-gray-300 text-sm focus:border-red-500 focus:ring-red-500" />
+                <input type="text" placeholder="CVC" value="123" class="block w-full rounded-md border-gray-300 text-sm focus:border-red-500 focus:ring-red-500" />
+              </div>
+            </div>
+          </div>
+          <button
+            onclick="showSuccess()"
+            class="mt-6 w-full rounded-lg bg-red-600 px-4 py-3 text-sm font-semibold text-white shadow-sm hover:bg-red-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600 transition-colors"
+          >
+            Submit Payment
+          </button>
+          <div class="mt-4 flex items-center justify-center space-x-2 text-sm text-gray-500">
+            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" /></svg>
+            <span>Secured by Stripe</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3: Success (hidden by default) -->
+      <div id="step-success" class="hidden">
+        <div class="text-center py-16">
+          <div class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 mb-6">
+            <svg class="h-10 w-10 text-green-600" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          </div>
+          <h2 class="text-3xl font-bold text-gray-900">Thank You!</h2>
+          <p class="mt-3 text-lg text-gray-600">Your generous donation of <strong id="success-amount">$150</strong> will help provide nutritious meals for students in need.</p>
+          <p class="mt-2 text-sm text-gray-500">A receipt has been sent to your email address.</p>
+
+          <div class="mt-10 bg-white shadow-sm ring-1 ring-gray-900/5 rounded-xl p-6 text-left max-w-md mx-auto">
+            <h3 class="text-sm font-semibold text-gray-900 mb-3">What happens next</h3>
+            <ul class="space-y-3">
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 h-6 w-6 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600">1</span>
+                <p class="text-sm text-gray-600">Your donation is distributed across our partner schools to fund student meal programs.</p>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 h-6 w-6 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600">2</span>
+                <p class="text-sm text-gray-600">Students receive daily nutritious meals, supporting their health and education.</p>
+              </li>
+              <li class="flex items-start gap-3">
+                <span class="flex-shrink-0 h-6 w-6 bg-red-100 rounded-full flex items-center justify-center text-xs font-bold text-red-600">3</span>
+                <p class="text-sm text-gray-600">Track the collective impact of donations on your dashboard.</p>
+              </li>
+            </ul>
+          </div>
+
+          <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+            <a href="#" class="rounded-lg bg-red-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-red-500 transition-colors">
+              Go to Dashboard
+            </a>
+            <a href="#" class="rounded-lg bg-white px-6 py-3 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 transition-colors">
+              Sponsor a Specific Child
+            </a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 mt-auto" aria-labelledby="footer-heading">
+    <h2 id="footer-heading" class="sr-only">Footer</h2>
+    <div class="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
+      <div class="xl:grid xl:grid-cols-3 xl:gap-8">
+        <div class="space-y-8">
+          <div class="text-2xl font-semibold text-white">Infinit-O Foundation</div>
+        </div>
+        <div class="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
+          <div class="md:grid md:grid-cols-2 md:gap-8">
+            <div>
+              <h3 class="text-sm font-semibold leading-6 text-white">Quick Links</h3>
+              <ul role="list" class="mt-6 space-y-4">
+                <li><a href="#" class="text-sm leading-6 text-gray-300 hover:text-white">Our Mission</a></li>
+                <li><a href="#" class="text-sm leading-6 text-gray-300 hover:text-white">Impact</a></li>
+                <li><a href="#" class="text-sm leading-6 text-gray-300 hover:text-white">Sponsor a Child</a></li>
+                <li><a href="#" class="text-sm leading-6 text-gray-300 hover:text-white">Sign In</a></li>
+              </ul>
+            </div>
+            <div class="mt-10 md:mt-0">
+              <h3 class="text-sm font-semibold leading-6 text-white">Legal</h3>
+              <ul role="list" class="mt-6 space-y-4">
+                <li><a href="#" class="text-sm leading-6 text-gray-300 hover:text-white">Privacy Policy</a></li>
+                <li><a href="#" class="text-sm leading-6 text-gray-300 hover:text-white">Terms of Service</a></li>
+                <li><a href="#" class="text-sm leading-6 text-gray-300 hover:text-white">Cookie Policy</a></li>
+              </ul>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-sm font-semibold leading-6 text-white">Contact Us</h3>
+            <ul role="list" class="mt-6 space-y-4">
+              <li class="flex">
+                <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" /></svg>
+                <span class="ml-3 text-sm leading-6 text-gray-300">contact@infinit-o.foundation</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="mt-16 border-t border-white/10 pt-8 sm:mt-20 lg:mt-24">
+        <p class="text-xs leading-5 text-gray-400">&copy; 2026 IOF (USA), Inc. a 501(c)(3) nonprofit organization. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    let selectedAmount = 150;
+
+    function selectAmount(amount, btn) {
+      selectedAmount = amount;
+      document.getElementById('custom-amount').value = '';
+      document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      updateImpact();
+    }
+
+    function customAmount(input) {
+      const val = parseInt(input.value);
+      if (val >= 1) {
+        selectedAmount = val;
+        document.querySelectorAll('.amount-btn').forEach(b => b.classList.remove('selected'));
+        updateImpact();
+      }
+    }
+
+    function updateImpact() {
+      document.getElementById('impact-amount').textContent = '$' + selectedAmount;
+      const meals = selectedAmount; // ~$1 per meal
+      let desc;
+      if (selectedAmount >= 150) {
+        const children = Math.floor(selectedAmount / 150);
+        desc = `This provides approximately ${meals} nutritious meals — enough to support ${children} child${children > 1 ? 'ren' : ''} for a full semester across our partner schools.`;
+      } else {
+        desc = `This provides approximately ${meals} nutritious meals for students across our partner schools, supporting their health and ability to focus in the classroom.`;
+      }
+      document.getElementById('impact-description').textContent = desc;
+    }
+
+    function showCheckout() {
+      document.getElementById('step-amount').classList.add('hidden');
+      document.getElementById('step-payment').classList.remove('hidden');
+      document.getElementById('step-success').classList.add('hidden');
+      document.getElementById('checkout-amount').textContent = '$' + selectedAmount;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showAmountStep() {
+      document.getElementById('step-amount').classList.remove('hidden');
+      document.getElementById('step-payment').classList.add('hidden');
+      document.getElementById('step-success').classList.add('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function showSuccess() {
+      document.getElementById('step-amount').classList.add('hidden');
+      document.getElementById('step-payment').classList.add('hidden');
+      document.getElementById('step-success').classList.remove('hidden');
+      document.getElementById('success-amount').textContent = '$' + selectedAmount;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  </script>
+
+</body>
+</html>
