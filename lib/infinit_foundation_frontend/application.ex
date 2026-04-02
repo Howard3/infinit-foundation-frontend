@@ -17,6 +17,7 @@ defmodule InfinitFoundationFrontend.Application do
       # {InfinitFoundationFrontend.Worker, arg},
       # Start to serve requests, typically the last entry
       InfinitFoundationFrontendWeb.Endpoint,
+      InfinitFoundationFrontend.FeedingCountCache,
       InfinitFoundationFrontend.SponsorshipLocks,
       # Add the payment intent cleaner worker
       InfinitFoundationFrontend.Workers.PaymentIntentCleaner

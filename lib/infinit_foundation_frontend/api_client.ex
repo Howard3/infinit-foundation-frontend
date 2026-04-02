@@ -124,6 +124,26 @@ defmodule InfinitFoundationFrontend.ApiClient do
     }
   end
 
+  @doc """
+  Gets the total feeding count from the stats endpoint.
+  """
+  @spec get_feeding_count() :: {:ok, integer()} | {:error, any()}
+  def get_feeding_count do
+    case Req.get(url("/stats/feeding-count"), headers: default_headers()) do
+      {:ok, %{status: 200, body: count}} when is_integer(count) ->
+        {:ok, count}
+
+      {:ok, %{status: 200, body: %{"count" => count}}} when is_integer(count) ->
+        {:ok, count}
+
+      {:ok, %{status: status}} ->
+        {:error, {:unexpected_status, status}}
+
+      {:error, reason} ->
+        {:error, reason}
+    end
+  end
+
   def default_page_size, do: @page_size
 
   @doc """
